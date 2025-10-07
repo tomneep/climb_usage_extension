@@ -15,39 +15,41 @@ class APODWidget extends Widget {
     constructor() {
 	super();
 
-	this.addClass('my-apodWidget');
-
 	this.descriptionList = document.createElement('dl');
 	this.node.appendChild(this.descriptionList);
 
 	this.memory_usage = document.createElement('progress');
-	this.node.appendChild(this.memory_usage);
 
 	const user_dt = document.createElement('dt');
 	const group_dt = document.createElement('dt');
 	const cpus_dt = document.createElement('dt');
+	const mem_usage_dt = document.createElement('dt');
 
 	user_dt.textContent = 'User';
 	group_dt.textContent = 'Group';
 	cpus_dt.textContent = 'CPUs';
+	mem_usage_dt.textContent = 'Memory usage';
+
 
 	const user = document.createElement('dd');
 	const group = document.createElement('dd');
 	const cpus = document.createElement('dd');
-	
+	const mem_usage = document.createElement('dd');
+	mem_usage.appendChild(this.memory_usage)
+
 	// Get username and group on connection
         requestAPI<any>('get-env')
-            .then(data => {		
+            .then(data => {
 		console.log(data);
 		// this.user.innerText = data['user'];
 		// this.group.innerText = data['group'];
 		user.textContent = data['user'];
 		this.descriptionList.appendChild(user_dt);
-		this.descriptionList.appendChild(user);		
+		this.descriptionList.appendChild(user);
 		group.textContent = data['group'];
 		this.descriptionList.appendChild(group_dt);
 		this.descriptionList.appendChild(group);
-		
+
             })
             .catch(reason => {
 		console.error(
@@ -57,12 +59,14 @@ class APODWidget extends Widget {
 
 	// Get username and group on connection
         requestAPI<any>('limits')
-            .then(data => {		
+            .then(data => {
 		console.log(data);
 		cpus.textContent = data['cpu_limit'];
 		this.descriptionList.appendChild(cpus_dt);
-		this.descriptionList.appendChild(cpus);		
+		this.descriptionList.appendChild(cpus);
 		this.memory_usage.max = data['max_memory'];
+		this.descriptionList.appendChild(mem_usage_dt);
+		this.descriptionList.appendChild(mem_usage);
 		// this.cpu_limit.innerText = data['cpu_limit'];
             })
             .catch(reason => {
@@ -71,7 +75,7 @@ class APODWidget extends Widget {
 		);
             });
 
-	
+
     }
 
     async onUpdateRequest(): Promise<void> {
@@ -104,7 +108,7 @@ class APODWidget extends Widget {
     private memory_usage: HTMLProgressElement;
 
     private descriptionList: HTMLDListElement;
-    
+
     private intervalId: number | null = null;
     private pollInterval = 5000; // 5 seconds
 
