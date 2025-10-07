@@ -17,7 +17,6 @@ class APODWidget extends Widget {
 
 	this.addClass('my-apodWidget');
 
-
 	// Add a user element to the panel
 	this.user = document.createElement('p');
 	this.node.appendChild(this.user);
@@ -26,6 +25,8 @@ class APODWidget extends Widget {
 	this.group = document.createElement('p');
 	this.node.appendChild(this.group);
 
+	this.memory_usage = document.createElement('progress');
+	this.node.appendChild(this.memory_usage);
 
 	// Get username and group on connection
         requestAPI<any>('get-env')
@@ -40,11 +41,50 @@ class APODWidget extends Widget {
 		);
             });
 
+	// Get username and group on connection
+        requestAPI<any>('max-memory')
+            .then(data => {		
+		console.log(data);
+		this.memory_usage.max = data['max_memory'];
+            })
+            .catch(reason => {
+		console.error(
+                    `The climb_usage_extension server extension appears to be missing.\n${reason}`
+		);
+            });
+
 	
+    }
+
+    async onUpdateRequest(): Promise<void> {
+	try {
+	    const data = await requestAPI<any>('current-memory');
+	    this.memory_usage.value = data["value"];
+
+	} catch (err) {
+	    console.error('Error fetching metrics:', err);
+	}
+    }
+
+    onAfterAttach(): void {
+	// Start polling when widget is attached to the DOM
+	this.onUpdateRequest();
+	this.intervalId = window.setInterval(() => this.onUpdateRequest(), this.pollInterval);
+    }
+
+    onBeforeDetach(): void {
+	// Stop polling when the widget is removed
+	if (this.intervalId !== null) {
+	    clearInterval(this.intervalId);
+	    this.intervalId = null;
+	}
     }
 
     private user: HTMLParagraphElement;
     private group: HTMLParagraphElement;
+    private memory_usage: HTMLProgressElement;
+    private intervalId: number | null = null;
+    private pollInterval = 5000; // 5 seconds
 
 }
 /**
