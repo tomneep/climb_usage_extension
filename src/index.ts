@@ -46,12 +46,6 @@ class APODWidget extends Widget {
     private user: HTMLParagraphElement;
     private group: HTMLParagraphElement;
 
-    /**
-     * Handle update requests for the widget.
-     */
-    async updateAPODImage(): Promise<void> {
-
-    }
 }
 /**
  * Activate the APOD widget extension.
@@ -85,8 +79,6 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
 		// Attach the widget to the main work area if it's not there
 		app.shell.add(widget, 'main');
 	    }
-	    // Refresh the picture in the widget
-	    widget.content.updateAPODImage();
 	    // Activate the widget
 	    app.shell.activateById(widget.id);
 	}
