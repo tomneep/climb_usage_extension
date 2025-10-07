@@ -28,6 +28,9 @@ class APODWidget extends Widget {
 	this.memory_usage = document.createElement('progress');
 	this.node.appendChild(this.memory_usage);
 
+	this.cpu_limit = document.createElement('p');
+	this.node.append(this.cpu_limit);
+
 	// Get username and group on connection
         requestAPI<any>('get-env')
             .then(data => {		
@@ -42,10 +45,11 @@ class APODWidget extends Widget {
             });
 
 	// Get username and group on connection
-        requestAPI<any>('max-memory')
+        requestAPI<any>('limits')
             .then(data => {		
 		console.log(data);
 		this.memory_usage.max = data['max_memory'];
+		this.cpu_limit.innerText = data['cpu_limit'];
             })
             .catch(reason => {
 		console.error(
@@ -82,6 +86,7 @@ class APODWidget extends Widget {
 
     private user: HTMLParagraphElement;
     private group: HTMLParagraphElement;
+    private cpu_limit: HTMLParagraphElement;
     private memory_usage: HTMLProgressElement;
     private intervalId: number | null = null;
     private pollInterval = 5000; // 5 seconds

@@ -29,16 +29,17 @@ class EnvHandler(APIHandler):
         self.finish(json.dumps(out))
 
 
-class MaxMemHandler(APIHandler):
+class LimitsHandler(APIHandler):
     # The following decorator should be present on all verb methods (head, get, post,
     # patch, put, delete, options) to ensure only authorized user can request the
     # Jupyter server
     @tornado.web.authenticated
     def get(self):
 
-        max_memory = os.environ["MEM_LIMIT"]
+        max_memory = os.environ.get("MEM_LIMIT", 0)
+        cpu_limit = os.environ.get("CPU_LIMIT", 1)
 
-        out = {"max_memory": max_memory}
+        out = {"max_memory": max_memory, "cpu_limit": cpu_limit}
         self.finish(json.dumps(out))
 
 
@@ -67,14 +68,14 @@ def setup_handlers(web_app):
     base_url = web_app.settings["base_url"]
     route_pattern = url_path_join(base_url, "climb-usage-extension", "get-example")
     env_pattern = url_path_join(base_url, "climb-usage-extension", "get-env")
-    max_memory_pattern = url_path_join(base_url, "climb-usage-extension", "max-memory");
+    limits_pattern = url_path_join(base_url, "climb-usage-extension", "limits");
     current_memory_pattern = url_path_join(base_url, "climb-usage-extension", "current-memory");
 
 
     handlers = [
         (route_pattern, RouteHandler),
         (env_pattern, EnvHandler),
-        (max_memory_pattern, MaxMemHandler),
+        (limits_pattern, LimitsHandler),
         (current_memory_pattern, CurrentMemHandler),
     ]
 
