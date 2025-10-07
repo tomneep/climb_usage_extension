@@ -15,11 +15,13 @@ class APODWidget extends Widget {
     constructor() {
 	super();
 
+	const header = document.createElement('header');
+	this.node.appendChild(header);
+	const nav = document.createElement('nav');
+	header.appendChild(nav);
+
 	this.descriptionList = document.createElement('dl');
 	this.node.appendChild(this.descriptionList);
-
-	const nav = document.createElement('nav');
-	this.node.appendChild(nav);
 
 	this.memory_usage = document.createElement('progress');
 
