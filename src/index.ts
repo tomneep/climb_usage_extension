@@ -18,6 +18,9 @@ class APODWidget extends Widget {
 	this.descriptionList = document.createElement('dl');
 	this.node.appendChild(this.descriptionList);
 
+	const nav = document.createElement('nav');
+	this.node.appendChild(nav);
+
 	this.memory_usage = document.createElement('progress');
 
 	const user_dt = document.createElement('dt');
@@ -30,7 +33,6 @@ class APODWidget extends Widget {
 	cpus_dt.textContent = 'CPUs';
 	mem_usage_dt.textContent = 'Memory usage';
 
-
 	const user = document.createElement('dd');
 	const group = document.createElement('dd');
 	const cpus = document.createElement('dd');
@@ -41,8 +43,6 @@ class APODWidget extends Widget {
         requestAPI<any>('get-env')
             .then(data => {
 		console.log(data);
-		// this.user.innerText = data['user'];
-		// this.group.innerText = data['group'];
 		user.textContent = data['user'];
 		this.descriptionList.appendChild(user_dt);
 		this.descriptionList.appendChild(user);
@@ -67,7 +67,6 @@ class APODWidget extends Widget {
 		this.memory_usage.max = data['max_memory'];
 		this.descriptionList.appendChild(mem_usage_dt);
 		this.descriptionList.appendChild(mem_usage);
-		// this.cpu_limit.innerText = data['cpu_limit'];
             })
             .catch(reason => {
 		console.error(
@@ -75,7 +74,26 @@ class APODWidget extends Widget {
 		);
             });
 
+	// Links
+	const links = [
+	    { label: 'Documentation', href: 'https://docs.climb.ac.uk' },
+	    { label: 'Support', href: 'mailto:support@climb.ac.uk' },
+	    { label: 'Bryn', href: 'https://bryn.climb.ac.uk' }
+	];
 
+	const list = document.createElement('ul');
+	for (const link of links) {
+	    const li = document.createElement('li');
+	    const a = document.createElement('a');
+	    a.href = link.href;
+	    a.textContent = link.label;
+	    a.target = '_blank'; // open in new tab
+	    a.rel = 'noopener noreferrer'; // security best practice
+	    a.classList.add('text-blue-600', 'hover:underline');
+	    li.appendChild(a);
+	    list.appendChild(li);
+	}
+	nav.appendChild(list);
     }
 
     async onUpdateRequest(): Promise<void> {
@@ -102,9 +120,6 @@ class APODWidget extends Widget {
 	}
     }
 
-    // private user: HTMLParagraphElement;
-    // private group: HTMLParagraphElement;
-    // private cpu_limit: HTMLParagraphElement;
     private memory_usage: HTMLProgressElement;
 
     private descriptionList: HTMLDListElement;
