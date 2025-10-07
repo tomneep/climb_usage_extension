@@ -1,6 +1,7 @@
 import json
 import os
 import random
+from pathlib import Path
 
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
@@ -50,17 +51,16 @@ class CurrentMemHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
 
-        max_memory = os.environ["MEM_LIMIT"]
+        path = Path("/sys/fs/cgroup/memory.current")
 
-        x = random.randint(0, int(max_memory))
-        
-        out = {"value": x}
-        self.finish(json.dumps(out))
-        
+        if not path.exists():
+            max_memory = os.environ["MEM_LIMIT"]
+            x = random.randint(0, int(max_memory))
+        else:
+            with path.open() as f:
+                x = f.read().strip()
 
-        
-
-
+        self.finish(json.dumps({"value": x}))
 
 def setup_handlers(web_app):
     host_pattern = ".*$"
