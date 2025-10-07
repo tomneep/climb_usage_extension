@@ -17,26 +17,37 @@ class APODWidget extends Widget {
 
 	this.addClass('my-apodWidget');
 
-	// Add a user element to the panel
-	this.user = document.createElement('p');
-	this.node.appendChild(this.user);
-
-	// Add a group element to the panel
-	this.group = document.createElement('p');
-	this.node.appendChild(this.group);
+	this.descriptionList = document.createElement('dl');
+	this.node.appendChild(this.descriptionList);
 
 	this.memory_usage = document.createElement('progress');
 	this.node.appendChild(this.memory_usage);
 
-	this.cpu_limit = document.createElement('p');
-	this.node.append(this.cpu_limit);
+	const user_dt = document.createElement('dt');
+	const group_dt = document.createElement('dt');
+	const cpus_dt = document.createElement('dt');
 
+	user_dt.textContent = 'User';
+	group_dt.textContent = 'Group';
+	cpus_dt.textContent = 'CPUs';
+
+	const user = document.createElement('dd');
+	const group = document.createElement('dd');
+	const cpus = document.createElement('dd');
+	
 	// Get username and group on connection
         requestAPI<any>('get-env')
             .then(data => {		
 		console.log(data);
-		this.user.innerText = data['user'];
-		this.group.innerText = data['group'];
+		// this.user.innerText = data['user'];
+		// this.group.innerText = data['group'];
+		user.textContent = data['user'];
+		this.descriptionList.appendChild(user_dt);
+		this.descriptionList.appendChild(user);		
+		group.textContent = data['group'];
+		this.descriptionList.appendChild(group_dt);
+		this.descriptionList.appendChild(group);
+		
             })
             .catch(reason => {
 		console.error(
@@ -48,8 +59,11 @@ class APODWidget extends Widget {
         requestAPI<any>('limits')
             .then(data => {		
 		console.log(data);
+		cpus.textContent = data['cpu_limit'];
+		this.descriptionList.appendChild(cpus_dt);
+		this.descriptionList.appendChild(cpus);		
 		this.memory_usage.max = data['max_memory'];
-		this.cpu_limit.innerText = data['cpu_limit'];
+		// this.cpu_limit.innerText = data['cpu_limit'];
             })
             .catch(reason => {
 		console.error(
@@ -84,10 +98,13 @@ class APODWidget extends Widget {
 	}
     }
 
-    private user: HTMLParagraphElement;
-    private group: HTMLParagraphElement;
-    private cpu_limit: HTMLParagraphElement;
+    // private user: HTMLParagraphElement;
+    // private group: HTMLParagraphElement;
+    // private cpu_limit: HTMLParagraphElement;
     private memory_usage: HTMLProgressElement;
+
+    private descriptionList: HTMLDListElement;
+    
     private intervalId: number | null = null;
     private pollInterval = 5000; // 5 seconds
 
