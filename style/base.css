@@ -31,3 +31,15 @@ nav ul li {
 progress {
     width: 100%;
 }
+
+.logo {
+    height: 5em;
+}
+
+nav {
+    background: black;
+}
+
+nav li {
+    color: white;
+}

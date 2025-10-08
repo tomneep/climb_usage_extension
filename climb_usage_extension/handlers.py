@@ -65,7 +65,7 @@ class CurrentMemHandler(APIHandler):
         path = Path("/sys/fs/cgroup/memory.current")
 
         if not path.exists():
-            max_memory = os.environ["MEM_LIMIT"]
+            max_memory = os.environ.get("MEM_LIMIT", 2**30)
             x = random.randint(0, int(max_memory))
         else:
             with path.open() as f:

@@ -31,6 +31,12 @@ class CLIMBWidget extends Widget {
 	const nav = document.createElement('nav');
 	header.appendChild(nav);
 
+	const logo = document.createElement('img');
+
+	logo.src = 'https://docs.climb.ac.uk/img/climb_big_data_white_450px.png';
+	logo.classList.add('logo');
+	nav.append(logo);
+
 	this.descriptionList = document.createElement('dl');
 	this.node.appendChild(this.descriptionList);
 
