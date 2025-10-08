@@ -63,7 +63,6 @@ def setup_handlers(web_app):
 
 
     handlers = [
-        (route_pattern, RouteHandler),
         (env_pattern, EnvHandler),
         (limits_pattern, LimitsHandler),
         (current_memory_pattern, CurrentMemHandler),
