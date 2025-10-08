@@ -23,12 +23,37 @@ class EnvHandler(APIHandler):
 
 
 class LimitsHandler(APIHandler):
+    """Originally I was getting CPU and memory limits from environment
+    variables set in CLIMB. Getting them from `/sys/fs/cgroup` allows
+    testing to be done without requiring those variables."""
     @tornado.web.authenticated
     def get(self):
+        
+        memory_path = Path("/sys/fs/cgroup/memory.max")
+        cpu_path = Path("/sys/fs/cgroup/cpu.max")
 
-        max_memory = os.environ.get("MEM_LIMIT", 0)
-        cpu_limit = os.environ.get("CPU_LIMIT", 1)
+        if not memory_path.exists():
+            max_memory = 0
+        else:
+            with memory_path.open() as f:
+                max_memory = f.read().strip()
+                if max_memory == "max":
+                    # Set some kind of dummy value for now (16 GB)
+                    max_memory = 2 ** 30
 
+        if not cpu_path.exists():
+            cpu_limit = 1
+        else:
+            with cpu_path.open() as f:
+                line = f.read().strip()
+                cpu_limit = line.split()[0]
+                # CPU limit can be "max", in which case we are a bit
+                # stuck here! Let's just set it to 1 and see
+                try:
+                    cpu_limit = int(cpu_limit)
+                except ValueError:
+                    cpu_limit = 1
+                    
         out = {"max_memory": max_memory, "cpu_limit": cpu_limit}
         self.finish(json.dumps(out))
 
@@ -90,9 +115,9 @@ def setup_handlers(web_app):
 
     base_url = web_app.settings["base_url"]
     env_pattern = url_path_join(base_url, "climb-usage-extension", "get-env")
-    limits_pattern = url_path_join(base_url, "climb-usage-extension", "limits");
-    current_memory_pattern = url_path_join(base_url, "climb-usage-extension", "current-memory");
-    cpu_usage_pattern = url_path_join(base_url, "climb-usage-extension", "cpu-usage");
+    limits_pattern = url_path_join(base_url, "climb-usage-extension", "limits")
+    current_memory_pattern = url_path_join(base_url, "climb-usage-extension", "current-memory")
+    cpu_usage_pattern = url_path_join(base_url, "climb-usage-extension", "cpu-usage")
 
 
     handlers = [
