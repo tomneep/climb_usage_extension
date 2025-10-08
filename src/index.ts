@@ -3,10 +3,21 @@ import {
     JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
+import { ILauncher } from '@jupyterlab/launcher';
+import { LabIcon } from '@jupyterlab/ui-components';
 import { requestAPI } from './handler';
 
 import { ICommandPalette, MainAreaWidget } from '@jupyterlab/apputils';
 import { Widget } from '@lumino/widgets';
+
+import cloudIconSvg from '../style/icons/cloud.svg';
+
+
+export const cloudIcon = new LabIcon({
+  name: 'climb-jupyterlab-extension:cloud_icon',
+  svgstr: cloudIconSvg
+});
+
 
 class CLIMBWidget extends Widget {
     /**
@@ -157,7 +168,7 @@ class CLIMBWidget extends Widget {
 /**
  * Activate the CLIMB widget extension.
  */
-function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
+function activate(app: JupyterFrontEnd, palette: ICommandPalette, launcher: ILauncher | null) {
     console.log('JupyterLab extension jupyterlab_climb is activated!');
 
     // Define a widget creator function
@@ -177,6 +188,8 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
     const command: string = 'climb:open';
     app.commands.addCommand(command, {
 	label: 'CLIMB dashboard',
+	caption: 'CLIMB dashboard',
+	icon: cloudIcon,
 	execute: () => {
 	    // Regenerate the widget if disposed
 	    if (widget.isDisposed) {
@@ -192,7 +205,11 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
     });
 
     // Add the command to the palette.
-    palette.addItem({ command, category: 'Tutorial' });
+    palette.addItem({ command, category: 'CLIMB' });
+
+    if (launcher) {
+	launcher.add({ command, category: 'CLIMB' });
+    }
 }
 
 /**
@@ -203,6 +220,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     description: 'A JupyterLab extension to query CLIMB resource usage',
     autoStart: true,
     requires: [ICommandPalette],
+    optional: [ILauncher],
     activate: activate
 };
 
