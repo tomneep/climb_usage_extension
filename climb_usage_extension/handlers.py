@@ -1,7 +1,8 @@
 import json
 import os
-import random
 from pathlib import Path
+import random
+import time
 
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
@@ -22,9 +23,6 @@ class EnvHandler(APIHandler):
 
 
 class LimitsHandler(APIHandler):
-    # The following decorator should be present on all verb methods (head, get, post,
-    # patch, put, delete, options) to ensure only authorized user can request the
-    # Jupyter server
     @tornado.web.authenticated
     def get(self):
 
@@ -36,9 +34,6 @@ class LimitsHandler(APIHandler):
 
 
 class CurrentMemHandler(APIHandler):
-    # The following decorator should be present on all verb methods (head, get, post,
-    # patch, put, delete, options) to ensure only authorized user can request the
-    # Jupyter server
     @tornado.web.authenticated
     def get(self):
 
@@ -53,6 +48,43 @@ class CurrentMemHandler(APIHandler):
 
         self.finish(json.dumps({"value": x}))
 
+
+class CpuUsageHandler(APIHandler):
+
+    previous_time = None
+    previous_value = None
+    
+    @tornado.web.authenticated
+    def get(self):
+
+        path = Path("/sys/fs/cgroup/cpu.stat")
+
+        # If we don't have this path then lets just leave here
+        if not path.exists():
+            self.finish(json.dumps({"value": 0}))
+            return
+
+        data = {}
+        with path.open() as f:
+            current_time = time.time()
+            for line in f:
+                key, _, value = line.partition(" ")
+                data[key] = value
+        current_value = int(data['usage_usec'])
+
+        cls = self.__class__
+        x = 0
+        if cls.previous_value is not None:                
+            t_diff = current_time - cls.previous_time
+            v_diff = current_value - cls.previous_value
+            x = v_diff / (t_diff * 1e6)
+        
+        cls.previous_time = current_time
+        cls.previous_value = current_value
+
+        self.finish(json.dumps({"value": x}))
+
+
 def setup_handlers(web_app):
     host_pattern = ".*$"
 
@@ -60,12 +92,14 @@ def setup_handlers(web_app):
     env_pattern = url_path_join(base_url, "climb-usage-extension", "get-env")
     limits_pattern = url_path_join(base_url, "climb-usage-extension", "limits");
     current_memory_pattern = url_path_join(base_url, "climb-usage-extension", "current-memory");
+    cpu_usage_pattern = url_path_join(base_url, "climb-usage-extension", "cpu-usage");
 
 
     handlers = [
         (env_pattern, EnvHandler),
         (limits_pattern, LimitsHandler),
         (current_memory_pattern, CurrentMemHandler),
+        (cpu_usage_pattern, CpuUsageHandler),
     ]
 
     web_app.add_handlers(host_pattern, handlers)

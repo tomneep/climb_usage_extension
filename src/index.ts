@@ -24,22 +24,28 @@ class APODWidget extends Widget {
 	this.node.appendChild(this.descriptionList);
 
 	this.memory_usage = document.createElement('progress');
+	this.cpu_usage_progress = document.createElement('progress');
 
 	const user_dt = document.createElement('dt');
 	const group_dt = document.createElement('dt');
 	const cpus_dt = document.createElement('dt');
 	const mem_usage_dt = document.createElement('dt');
+	const cpu_usage_dt = document.createElement('dt');
 
 	user_dt.textContent = 'User';
 	group_dt.textContent = 'Group';
 	cpus_dt.textContent = 'CPUs';
 	mem_usage_dt.textContent = 'Memory usage';
+	cpu_usage_dt.textContent = 'CPU %';
 
 	const user = document.createElement('dd');
 	const group = document.createElement('dd');
 	const cpus = document.createElement('dd');
 	const mem_usage = document.createElement('dd');
 	mem_usage.appendChild(this.memory_usage)
+
+	const cpu_usage = document.createElement('dd');
+	cpu_usage.appendChild(this.cpu_usage_progress);
 
 	// Get username and group on connection
         requestAPI<any>('get-env')
@@ -69,6 +75,8 @@ class APODWidget extends Widget {
 		this.memory_usage.max = data['max_memory'];
 		this.descriptionList.appendChild(mem_usage_dt);
 		this.descriptionList.appendChild(mem_usage);
+		this.descriptionList.appendChild(cpu_usage_dt);
+		this.descriptionList.appendChild(cpu_usage);
             })
             .catch(reason => {
 		console.error(
@@ -106,6 +114,17 @@ class APODWidget extends Widget {
 	} catch (err) {
 	    console.error('Error fetching metrics:', err);
 	}
+
+	try {
+	    const data = await requestAPI<any>('cpu-usage');
+	    this.cpu_usage_progress.value = data["value"];
+	    console.log("CPU: ", data["value"]);
+
+	} catch (err) {
+	    console.error('Error fetching metrics:', err);
+	}
+
+	
     }
 
     onAfterAttach(): void {
@@ -123,6 +142,7 @@ class APODWidget extends Widget {
     }
 
     private memory_usage: HTMLProgressElement;
+    private cpu_usage_progress: HTMLProgressElement;
 
     private descriptionList: HTMLDListElement;
 
