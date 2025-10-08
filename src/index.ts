@@ -69,7 +69,8 @@ class APODWidget extends Widget {
         requestAPI<any>('limits')
             .then(data => {
 		console.log(data);
-		cpus.textContent = data['cpu_limit'];
+		this.ncpus = data['cpu_limit'] as number;
+		cpus.textContent = String(this.ncpus);
 		this.descriptionList.appendChild(cpus_dt);
 		this.descriptionList.appendChild(cpus);
 		this.memory_usage.max = data['max_memory'];
@@ -117,14 +118,16 @@ class APODWidget extends Widget {
 
 	try {
 	    const data = await requestAPI<any>('cpu-usage');
-	    this.cpu_usage_progress.value = data["value"];
-	    console.log("CPU: ", data["value"]);
+	    let value : number = parseFloat(data["value"]);
+	    let usage = value / this.ncpus;
+	    this.cpu_usage_progress.value = usage;
+	    console.log("CPU: ", data["value"], "usage:", usage);
 
 	} catch (err) {
 	    console.error('Error fetching metrics:', err);
 	}
 
-	
+
     }
 
     onAfterAttach(): void {
@@ -143,6 +146,7 @@ class APODWidget extends Widget {
 
     private memory_usage: HTMLProgressElement;
     private cpu_usage_progress: HTMLProgressElement;
+    private ncpus : number = 1;
 
     private descriptionList: HTMLDListElement;
 

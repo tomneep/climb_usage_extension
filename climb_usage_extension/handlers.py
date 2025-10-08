@@ -46,11 +46,11 @@ class LimitsHandler(APIHandler):
         else:
             with cpu_path.open() as f:
                 line = f.read().strip()
-                cpu_limit = line.split()[0]
+                cpu_limit, period = line.split()
                 # CPU limit can be "max", in which case we are a bit
                 # stuck here! Let's just set it to 1 and see
                 try:
-                    cpu_limit = int(cpu_limit)
+                    cpu_limit = float(cpu_limit) / int(period)
                 except ValueError:
                     cpu_limit = 1
                     
