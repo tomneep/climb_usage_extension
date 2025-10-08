@@ -8,9 +8,9 @@ import { requestAPI } from './handler';
 import { ICommandPalette, MainAreaWidget } from '@jupyterlab/apputils';
 import { Widget } from '@lumino/widgets';
 
-class APODWidget extends Widget {
+class CLIMBWidget extends Widget {
     /**
-     * Construct a new APOD widget.
+     * Construct a new CLIMB widget.
      */
     constructor() {
 	super();
@@ -155,17 +155,17 @@ class APODWidget extends Widget {
 
 }
 /**
- * Activate the APOD widget extension.
+ * Activate the CLIMB widget extension.
  */
 function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
-    console.log('JupyterLab extension jupyterlab_apod is activated!');
+    console.log('JupyterLab extension jupyterlab_climb is activated!');
 
     // Define a widget creator function
     const newWidget = () => {
-	const content = new APODWidget();
+	const content = new CLIMBWidget();
 	const widget = new MainAreaWidget({content});
-	widget.id = 'apod-jupyterlab';
-	widget.title.label = 'Astronomy Picture';
+	widget.id = 'climb-jupyterlab';
+	widget.title.label = 'CLIMB stats';
 	widget.title.closable = true;
 	return widget;
     }
@@ -174,9 +174,9 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
     let widget = newWidget();
 
     // Add an application command
-    const command: string = 'apod:open';
+    const command: string = 'climb:open';
     app.commands.addCommand(command, {
-	label: 'Random Astronomy Picture',
+	label: 'CLIMB dashboard',
 	execute: () => {
 	    // Regenerate the widget if disposed
 	    if (widget.isDisposed) {
