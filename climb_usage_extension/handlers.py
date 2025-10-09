@@ -4,6 +4,8 @@ from pathlib import Path
 import random
 import time
 
+import shutil
+
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 import tornado
@@ -21,14 +23,18 @@ class EnvHandler(APIHandler):
         out = {"user": user, "group": group}
         self.finish(json.dumps(out))
 
-
+# WARNING: You might think that getting the number of CPUs this way is
+# odd, considering there are methods like os.cpu_count() and
+# psutil.cpu_count(), however, these will return the CPU count of the
+# entire node and not of the container. There is a python bug here:
+# https://bugs.python.org/issue36054
 class LimitsHandler(APIHandler):
     """Originally I was getting CPU and memory limits from environment
     variables set in CLIMB. Getting them from `/sys/fs/cgroup` allows
     testing to be done without requiring those variables."""
     @tornado.web.authenticated
     def get(self):
-        
+
         memory_path = Path("/sys/fs/cgroup/memory.max")
         cpu_path = Path("/sys/fs/cgroup/cpu.max")
 
@@ -53,11 +59,13 @@ class LimitsHandler(APIHandler):
                     cpu_limit = float(cpu_limit) / int(period)
                 except ValueError:
                     cpu_limit = 1
-                    
+
         out = {"max_memory": max_memory, "cpu_limit": cpu_limit}
         self.finish(json.dumps(out))
 
-
+# Note that psutil can't be used to get the memory usage inside a
+# container (correct as of 2025/10/09) See:
+# https://github.com/giampaolo/psutil/issues/2100
 class CurrentMemHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
@@ -73,12 +81,13 @@ class CurrentMemHandler(APIHandler):
 
         self.finish(json.dumps({"value": x}))
 
-
+# See above warnings about why we can't just use psutil for the CPU
+# usage
 class CpuUsageHandler(APIHandler):
 
     previous_time = None
     previous_value = None
-    
+
     @tornado.web.authenticated
     def get(self):
 
@@ -99,15 +108,47 @@ class CpuUsageHandler(APIHandler):
 
         cls = self.__class__
         x = 0
-        if cls.previous_value is not None:                
+        if cls.previous_value is not None:
             t_diff = current_time - cls.previous_time
             v_diff = current_value - cls.previous_value
             x = v_diff / (t_diff * 1e6)
-        
+
         cls.previous_time = current_time
         cls.previous_value = current_value
 
         self.finish(json.dumps({"value": x}))
+
+
+class DiskUsageHandler(APIHandler):
+
+    @tornado.web.authenticated
+    def get(self):
+
+        output = []
+
+        # Show home directory usage and /shared/team/
+
+        home = {
+            "label": "~",
+            "id_prefix": "home_disk_usage",
+            "data": shutil.disk_usage(Path.home())._asdict()
+        }
+        output.append(home)
+
+
+        try:
+            shared_team = shutil.disk_usage("/shared/team")
+        except FileNotFoundError:
+            pass
+        else:
+            shared = {
+                "label": '/shared/team/',
+                "id_prefix": 'shared_team_disk_usage',
+                "data": shared_team._asdict()}
+            output.append(shared)
+
+
+        return self.finish(json.dumps(output))
 
 
 def setup_handlers(web_app):
@@ -118,6 +159,7 @@ def setup_handlers(web_app):
     limits_pattern = url_path_join(base_url, "climb-usage-extension", "limits")
     current_memory_pattern = url_path_join(base_url, "climb-usage-extension", "current-memory")
     cpu_usage_pattern = url_path_join(base_url, "climb-usage-extension", "cpu-usage")
+    disk_usage_pattern = url_path_join(base_url, "climb-usage-extension", "disk-usage")
 
 
     handlers = [
@@ -125,6 +167,7 @@ def setup_handlers(web_app):
         (limits_pattern, LimitsHandler),
         (current_memory_pattern, CurrentMemHandler),
         (cpu_usage_pattern, CpuUsageHandler),
+        (disk_usage_pattern, DiskUsageHandler),
     ]
 
     web_app.add_handlers(host_pattern, handlers)
