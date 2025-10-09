@@ -29,11 +29,10 @@ class CLIMBWidget extends Widget {
     const nav = document.createElement('nav');
     header.appendChild(nav);
 
-    const logo = document.createElement('img');
-
-    logo.src = 'https://docs.climb.ac.uk/img/climb_big_data_white_450px.png';
-    logo.classList.add('logo');
-    nav.append(logo);
+    // const logo = document.createElement('img');
+    // logo.src = 'https://docs.climb.ac.uk/img/climb_big_data_white_450px.png';
+    // logo.classList.add('logo');
+    // nav.append(logo);
 
     this.descriptionList = document.createElement('dl');
     this.node.appendChild(this.descriptionList);
@@ -41,37 +40,47 @@ class CLIMBWidget extends Widget {
     this.memory_usage = document.createElement('progress');
     this.cpu_usage_progress = document.createElement('progress');
 
-    const user_dt = document.createElement('dt');
-    const group_dt = document.createElement('dt');
-    const cpus_dt = document.createElement('dt');
-    const mem_usage_dt = document.createElement('dt');
-    const cpu_usage_dt = document.createElement('dt');
+      // Items to show
+      // TODO: Make the ID prefix be determined programmatically
+    const items = [
+	{ label: 'User', id_prefix: 'user' },
+	{ label: 'Group', id_prefix: 'group' },
+	{ label: 'CPUs', id_prefix: 'cpus' },
+	{ label: 'Memory usage', id_prefix: 'memory_usage' },
+	{ label: 'CPU usage', id_prefix: 'cpu_usage' },
+    ];
+      for (const item of items) {
+	  const dt = document.createElement('dt');
+	  dt.id = item.id_prefix + "-dt";
+	  const dd = document.createElement('dd');
+	  dd.id = item.id_prefix + "-dd";
+	  const label = document.createTextNode(item.label);
 
-    user_dt.textContent = 'User';
-    group_dt.textContent = 'Group';
-    cpus_dt.textContent = 'CPUs';
-    mem_usage_dt.textContent = 'Memory usage';
-    cpu_usage_dt.textContent = 'CPU %';
+	  dt.appendChild(label);
 
-    const user = document.createElement('dd');
-    const group = document.createElement('dd');
-    const cpus = document.createElement('dd');
-    const mem_usage = document.createElement('dd');
-    mem_usage.appendChild(this.memory_usage);
+	  this.descriptionList.appendChild(dt);
+	  this.descriptionList.appendChild(dd);
+    }
 
-    const cpu_usage = document.createElement('dd');
-    cpu_usage.appendChild(this.cpu_usage_progress);
+      // const mem_usage = document.createElement('dd');
+      const mem_usage = this.node.querySelector('#memory_usage-dd');
+      if (mem_usage) {
+	  mem_usage.appendChild(this.memory_usage);
+      }
 
-    // Get username and group on connection
-    requestAPI<any>('get-env')
+      const cpu_usage = this.node.querySelector('#cpu_usage-dd');
+      if (cpu_usage) {
+	  cpu_usage.appendChild(this.cpu_usage_progress);
+      }
+
+      // Get username and group on connection
+      requestAPI<any>('get-env')
       .then(data => {
-        console.log(data);
-        user.textContent = data['user'];
-        this.descriptionList.appendChild(user_dt);
-        this.descriptionList.appendChild(user);
-        group.textContent = data['group'];
-        this.descriptionList.appendChild(group_dt);
-        this.descriptionList.appendChild(group);
+          console.log(data);
+	  let el = this.node.querySelector('#user-dd');
+	  if (el) { el.textContent = data['user']; }
+	  el = this.node.querySelector('#group-dd');
+	  if (el) el.textContent = data['group'];
       })
       .catch(reason => {
         console.error(
@@ -83,15 +92,11 @@ class CLIMBWidget extends Widget {
     requestAPI<any>('limits')
       .then(data => {
         console.log(data);
-        this.ncpus = data['cpu_limit'] as number;
-        cpus.textContent = String(this.ncpus);
-        this.descriptionList.appendChild(cpus_dt);
-        this.descriptionList.appendChild(cpus);
+          this.ncpus = data['cpu_limit'] as number;
+	  let el = this.node.querySelector('#cpus-dd');
+	  if (el) { el.textContent = String(this.ncpus); }
+
         this.memory_usage.max = data['max_memory'];
-        this.descriptionList.appendChild(mem_usage_dt);
-        this.descriptionList.appendChild(mem_usage);
-        this.descriptionList.appendChild(cpu_usage_dt);
-        this.descriptionList.appendChild(cpu_usage);
       })
       .catch(reason => {
         console.error(
