@@ -37,77 +37,76 @@ class CLIMBWidget extends Widget {
     this.descriptionList = document.createElement('dl');
     this.node.appendChild(this.descriptionList);
 
-      // Items to show
-      // TODO: Make the ID prefix be determined programmatically
+    // Items to show
+    // TODO: Make the ID prefix be determined programmatically
     const items = [
-	{ label: 'User', id_prefix: 'user' },
-	{ label: 'Group', id_prefix: 'group' },
-	{ label: 'CPUs', id_prefix: 'cpus' },
-	{ label: 'Memory usage', id_prefix: 'memory_usage' },
-	{ label: 'CPU usage', id_prefix: 'cpu_usage' },
+      { label: 'User', id_prefix: 'user' },
+      { label: 'Group', id_prefix: 'group' },
+      { label: 'CPUs', id_prefix: 'cpus' },
+      { label: 'Memory usage', id_prefix: 'memory_usage' },
+      { label: 'CPU usage', id_prefix: 'cpu_usage' }
     ];
-      for (const item of items) {
-	  const dt = document.createElement('dt');
-	  dt.id = item.id_prefix + "-dt";
-	  const dd = document.createElement('dd');
-	  dd.id = item.id_prefix + "-dd";
-	  const label = document.createTextNode(item.label);
+    for (const item of items) {
+      const dt = document.createElement('dt');
+      dt.id = item.id_prefix + '-dt';
+      const dd = document.createElement('dd');
+      dd.id = item.id_prefix + '-dd';
+      const label = document.createTextNode(item.label);
 
-	  dt.appendChild(label);
+      dt.appendChild(label);
 
-	  this.descriptionList.appendChild(dt);
-	  this.descriptionList.appendChild(dd);
+      this.descriptionList.appendChild(dt);
+      this.descriptionList.appendChild(dd);
     }
 
-      this.memory_usage = document.createElement('progress');
-      // const mem_usage = document.createElement('dd');
-      const mem_usage = this.node.querySelector('#memory_usage-dd');
-      if (mem_usage) {
-	  mem_usage.appendChild(this.memory_usage);
-      }
+    this.memory_usage = document.createElement('progress');
+    // const mem_usage = document.createElement('dd');
+    const mem_usage = this.node.querySelector('#memory_usage-dd');
+    if (mem_usage) {
+      mem_usage.appendChild(this.memory_usage);
+    }
 
-      this.cpu_usage_progress = document.createElement('progress');
-      const cpu_usage = this.node.querySelector('#cpu_usage-dd');
-      if (cpu_usage) {
-	  cpu_usage.appendChild(this.cpu_usage_progress);
-      }
+    this.cpu_usage_progress = document.createElement('progress');
+    const cpu_usage = this.node.querySelector('#cpu_usage-dd');
+    if (cpu_usage) {
+      cpu_usage.appendChild(this.cpu_usage_progress);
+    }
 
+    // Volumes
+    this.volumeList = document.createElement('dl');
+    this.node.appendChild(this.volumeList);
 
-      // Volumes
-      this.volumeList = document.createElement('dl');
-      this.node.appendChild(this.volumeList);
+    requestAPI<any>('disk-usage')
+      .then(volumes => {
+        for (const item of volumes) {
+          const dt = document.createElement('dt');
+          const dd = document.createElement('dd');
+          const label = document.createTextNode(item.label);
+          const progress = document.createElement('progress');
+          // Not a prefix but the actual ID
+          progress.id = item.id_prefix;
 
-      requestAPI<any>('disk-usage')
-	  .then(volumes => {
-	      for (const item of volumes) {
-		  const dt = document.createElement('dt');
-		  const dd = document.createElement('dd');
-		  const label = document.createTextNode(item.label);
-		  const progress = document.createElement('progress');
-		  // Not a prefix but the actual ID
-		  progress.id = item.id_prefix;
+          dt.appendChild(label);
+          dd.appendChild(progress);
 
-		  dt.appendChild(label);
-		  dd.appendChild(progress);
+          this.descriptionList.appendChild(dt);
+          this.descriptionList.appendChild(dd);
+        }
+      })
+      .catch(reason => {
+        console.error('Error getting volumes');
+      });
 
-		  this.descriptionList.appendChild(dt);
-		  this.descriptionList.appendChild(dd);
-
-	      }
-	  })
-	  .catch(reason => {
-	      console.error('Error getting volumes');
-	  });
-
-
-      // Get username and group on connection
-      requestAPI<any>('get-env')
+    // Get username and group on connection
+    requestAPI<any>('get-env')
       .then(data => {
-          console.log(data);
-	  let el = this.node.querySelector('#user-dd');
-	  if (el) { el.textContent = data['user']; }
-	  el = this.node.querySelector('#group-dd');
-	  if (el) el.textContent = data['group'];
+        console.log(data);
+        let el = this.node.querySelector('#user-dd');
+        if (el) {
+          el.textContent = data['user'];
+        }
+        el = this.node.querySelector('#group-dd');
+        if (el) el.textContent = data['group'];
       })
       .catch(reason => {
         console.error(
@@ -119,9 +118,11 @@ class CLIMBWidget extends Widget {
     requestAPI<any>('limits')
       .then(data => {
         console.log(data);
-          this.ncpus = data['cpu_limit'] as number;
-	  let el = this.node.querySelector('#cpus-dd');
-	  if (el) { el.textContent = String(this.ncpus); }
+        this.ncpus = data['cpu_limit'] as number;
+        let el = this.node.querySelector('#cpus-dd');
+        if (el) {
+          el.textContent = String(this.ncpus);
+        }
 
         this.memory_usage.max = data['max_memory'];
       })
@@ -166,26 +167,26 @@ class CLIMBWidget extends Widget {
       let value: number = parseFloat(data['value']);
       let usage = value / this.ncpus;
       this.cpu_usage_progress.value = usage;
-	console.log('CPU: ', data['value'], 'usage:', usage);
-	console.log(data)
+      console.log('CPU: ', data['value'], 'usage:', usage);
+      console.log(data);
     } catch (err) {
       console.error('Error fetching metrics:', err);
     }
 
-
-      try {
-	  const data = await requestAPI<any>('disk-usage');
-	  for (const vol of data) {
-	      const progress = this.node.querySelector('#' + vol.id_prefix) as HTMLProgressElement;
-	      if (progress) {
-		  progress.value = vol['data']['used'];
-		  progress.max = vol['data']['total'];
-	      }
-	  }
-      } catch (err) {
-	  console.error('Error fetching metrics:', err);
+    try {
+      const data = await requestAPI<any>('disk-usage');
+      for (const vol of data) {
+        const progress = this.node.querySelector(
+          '#' + vol.id_prefix
+        ) as HTMLProgressElement;
+        if (progress) {
+          progress.value = vol['data']['used'];
+          progress.max = vol['data']['total'];
+        }
       }
-
+    } catch (err) {
+      console.error('Error fetching metrics:', err);
+    }
   }
 
   onAfterAttach(): void {
@@ -209,8 +210,8 @@ class CLIMBWidget extends Widget {
   private cpu_usage_progress: HTMLProgressElement;
   private ncpus: number = 1;
 
-    private descriptionList: HTMLDListElement;
-    private volumeList: HTMLDListElement;
+  private descriptionList: HTMLDListElement;
+  private volumeList: HTMLDListElement;
 
   private intervalId: number | null = null;
   private pollInterval = 5000; // 5 seconds
