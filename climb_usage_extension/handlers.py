@@ -161,10 +161,11 @@ class HasGPUHandler(APIHandler):
 class GPUStatsHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
-        import pynvml
-        pynvml.nvmlInit()
-        handle = pynvml.nvmlDeviceGetHandleByIndex(0)
-        return self.finish(json.dumps({"handle": handle}))
+        # import pynvml
+        # pynvml.nvmlInit()
+        # handle = pynvml.nvmlDeviceGetHandleByIndex(0)
+        # return self.finish(json.dumps({"handle": handle}))
+        return self.finish(json.dumps({"handle": "handle"}))
 
 
 def setup_handlers(web_app):
