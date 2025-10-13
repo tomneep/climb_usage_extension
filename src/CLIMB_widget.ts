@@ -137,6 +137,18 @@ export class CLIMBWidget extends Widget {
       list.appendChild(li);
     }
     nav.appendChild(list);
+
+    // Test to see if we have a GPU. This test is currently only
+    // valid for NVIDIA GPUs (which is all we are using on CLIMB
+    // atm)
+    requestAPI<any>('has-gpu')
+      .then(data => {this.hasGPU = data['has_gpu'];})
+      .catch(reason => {
+        console.error(
+	  `The climb_usage_extension server extension appears to be missing.\n${reason}`
+        );
+      });
+
   }
 
   async onUpdateRequest(): Promise<void> {
@@ -152,8 +164,6 @@ export class CLIMBWidget extends Widget {
       let value: number = parseFloat(data['value']);
       let usage = value / this.ncpus;
       this.cpu_usage_progress.value = usage;
-      console.log('CPU: ', data['value'], 'usage:', usage);
-      console.log(data);
     } catch (err) {
       console.error('Error fetching metrics:', err);
     }
@@ -171,6 +181,18 @@ export class CLIMBWidget extends Widget {
       }
     } catch (err) {
       console.error('Error fetching metrics:', err);
+    }
+
+
+    // GPU Stats
+    if (this.hasGPU) {
+      console.log('Getting GPU stats');
+      try {
+	const data = await requestAPI<any>('gpu-stats');
+	console.log(data);
+      } catch (err) {
+	console.error('Error fetching metrics:', err);
+      }
     }
   }
 
@@ -200,4 +222,6 @@ export class CLIMBWidget extends Widget {
 
   private intervalId: number | null = null;
   private pollInterval = 5000; // 5 seconds
+
+  private hasGPU: boolean = false;
 }

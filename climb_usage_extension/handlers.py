@@ -151,6 +151,22 @@ class DiskUsageHandler(APIHandler):
         return self.finish(json.dumps(output))
 
 
+class HasGPUHandler(APIHandler):
+    @tornado.web.authenticated
+    def get(self):
+        has_gpu = "NVIDIA_VISIBLE_DEVICES" in os.environ
+        return self.finish(json.dumps({"has_gpu": has_gpu}))
+
+
+class GPUStatsHandler(APIHandler):
+    @tornado.web.authenticated
+    def get(self):
+        import pynvml
+        pynvml.nvmlInit()
+        handle = pynvml.nvmlDeviceGetHandleByIndex(i)
+        return self.finish(json.dumps({"handle": handle}))
+
+
 def setup_handlers(web_app):
     host_pattern = ".*$"
 
@@ -160,6 +176,8 @@ def setup_handlers(web_app):
     current_memory_pattern = url_path_join(base_url, "climb-usage-extension", "current-memory")
     cpu_usage_pattern = url_path_join(base_url, "climb-usage-extension", "cpu-usage")
     disk_usage_pattern = url_path_join(base_url, "climb-usage-extension", "disk-usage")
+    has_gpu_pattern = url_path_join(base_url, "climb-usage-extension", "has-gpu")
+    gpu_stats_pattern = url_path_join(base_url, "climb-usage-extension", "gpu-stats");
 
 
     handlers = [
@@ -168,6 +186,8 @@ def setup_handlers(web_app):
         (current_memory_pattern, CurrentMemHandler),
         (cpu_usage_pattern, CpuUsageHandler),
         (disk_usage_pattern, DiskUsageHandler),
+        (has_gpu_pattern, HasGPUHandler),
+        (gpu_stats_pattern, GPUStatsHandler),
     ]
 
     web_app.add_handlers(host_pattern, handlers)
