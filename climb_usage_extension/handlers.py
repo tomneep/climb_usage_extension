@@ -163,7 +163,7 @@ class GPUStatsHandler(APIHandler):
     def get(self):
         import pynvml
         pynvml.nvmlInit()
-        handle = pynvml.nvmlDeviceGetHandleByIndex(i)
+        handle = pynvml.nvmlDeviceGetHandleByIndex(0)
         return self.finish(json.dumps({"handle": handle}))
 
 
