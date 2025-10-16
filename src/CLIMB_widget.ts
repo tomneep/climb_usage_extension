@@ -1,7 +1,6 @@
 import { requestAPI } from './handler';
 import { Widget } from '@lumino/widgets';
 
-
 export class CLIMBWidget extends Widget {
   /**
    * Construct a new CLIMB widget.
@@ -9,15 +8,7 @@ export class CLIMBWidget extends Widget {
   constructor() {
     super();
 
-    const header = document.createElement('header');
-    this.node.appendChild(header);
-    const nav = document.createElement('nav');
-    header.appendChild(nav);
-
-    // const logo = document.createElement('img');
-    // logo.src = 'https://docs.climb.ac.uk/img/climb_big_data_white_450px.png';
-    // logo.classList.add('logo');
-    // nav.append(logo);
+    this.createNavbar();
 
     this.descriptionList = document.createElement('dl');
     this.node.appendChild(this.descriptionList);
@@ -117,26 +108,6 @@ export class CLIMBWidget extends Widget {
         );
       });
 
-    // Links
-    const links = [
-      { label: 'Documentation', href: 'https://docs.climb.ac.uk' },
-      { label: 'Support', href: 'mailto:support@climb.ac.uk' },
-      { label: 'Bryn', href: 'https://bryn.climb.ac.uk' }
-    ];
-
-    const list = document.createElement('ul');
-    for (const link of links) {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = link.href;
-      a.textContent = link.label;
-      a.target = '_blank'; // open in new tab
-      a.rel = 'noopener noreferrer'; // security best practice
-      a.classList.add('text-blue-600', 'hover:underline');
-      li.appendChild(a);
-      list.appendChild(li);
-    }
-    nav.appendChild(list);
 
     // Test to see if we have a GPU. This test is currently only
     // valid for NVIDIA GPUs (which is all we are using on CLIMB
@@ -211,6 +182,36 @@ export class CLIMBWidget extends Widget {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
+  }
+
+  private createNavbar() : void {
+
+    const header = document.createElement('header');
+    this.node.appendChild(header);
+    const nav = document.createElement('nav');
+    header.appendChild(nav);
+
+        // Links
+    const links = [
+      { label: 'Documentation', href: 'https://docs.climb.ac.uk' },
+      { label: 'Support', href: 'mailto:support@climb.ac.uk' },
+      { label: 'Bryn', href: 'https://bryn.climb.ac.uk' }
+    ];
+
+    const list = document.createElement('ul');
+    for (const link of links) {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = link.href;
+      a.textContent = link.label;
+      a.target = '_blank'; // open in new tab
+      a.rel = 'noopener noreferrer'; // security best practice
+      a.classList.add('text-blue-600', 'hover:underline');
+      li.appendChild(a);
+      list.appendChild(li);
+    }
+    nav.appendChild(list);
+
   }
 
   private memory_usage: HTMLProgressElement;
