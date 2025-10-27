@@ -84,7 +84,9 @@ export class CLIMBWidget extends Widget {
           el.textContent = data['user'];
         }
         el = this.node.querySelector('#group-dd');
-        if (el) el.textContent = data['group'];
+        if (el) {
+          el.textContent = data['group'];
+        }
       })
       .catch(reason => {
         console.error(
@@ -97,7 +99,7 @@ export class CLIMBWidget extends Widget {
       .then(data => {
         console.log(data);
         this.ncpus = data['cpu_limit'] as number;
-        let el = this.node.querySelector('#cpus-dd');
+        const el = this.node.querySelector('#cpus-dd');
         if (el) {
           el.textContent = String(this.ncpus);
         }
@@ -110,18 +112,18 @@ export class CLIMBWidget extends Widget {
         );
       });
 
-
     // Test to see if we have a GPU. This test is currently only
     // valid for NVIDIA GPUs (which is all we are using on CLIMB
     // atm)
     requestAPI<any>('has-gpu')
-      .then(data => {this.hasGPU = data['has_gpu'];})
+      .then(data => {
+        this.hasGPU = data['has_gpu'];
+      })
       .catch(reason => {
         console.error(
-	  `The climb_usage_extension server extension appears to be missing.\n${reason}`
+          `The climb_usage_extension server extension appears to be missing.\n${reason}`
         );
       });
-
   }
 
   async onUpdateRequest(): Promise<void> {
@@ -134,8 +136,8 @@ export class CLIMBWidget extends Widget {
 
     try {
       const data = await requestAPI<any>('cpu-usage');
-      let value: number = parseFloat(data['value']);
-      let usage = value / this.ncpus;
+      const value: number = parseFloat(data['value']);
+      const usage = value / this.ncpus;
       this.cpu_usage_progress.value = usage;
     } catch (err) {
       console.error('Error fetching metrics:', err);
@@ -156,15 +158,14 @@ export class CLIMBWidget extends Widget {
       console.error('Error fetching metrics:', err);
     }
 
-
     // GPU Stats
     if (this.hasGPU) {
       console.log('Getting GPU stats');
       try {
-	const data = await requestAPI<any>('gpu-stats');
-	console.log(data);
+        const data = await requestAPI<any>('gpu-stats');
+        console.log(data);
       } catch (err) {
-	console.error('Error fetching metrics:', err);
+        console.error('Error fetching metrics:', err);
       }
     }
   }
@@ -186,8 +187,7 @@ export class CLIMBWidget extends Widget {
     }
   }
 
-  private createNavbar() : void {
-
+  private createNavbar(): void {
     const header = document.createElement('header');
     this.node.appendChild(header);
     const nav = document.createElement('nav');
@@ -199,7 +199,7 @@ export class CLIMBWidget extends Widget {
     container_fluid.className = 'container-fluid';
     nav.appendChild(container_fluid);
 
-        // Links
+    // Links
     const links = [
       { label: 'Documentation', href: 'https://docs.climb.ac.uk' },
       { label: 'Support', href: 'mailto:support@climb.ac.uk' },
@@ -207,7 +207,7 @@ export class CLIMBWidget extends Widget {
     ];
 
     const list = document.createElement('div');
-    list.classList.add('navbar-nav')
+    list.classList.add('navbar-nav');
     for (const link of links) {
       const a = document.createElement('a');
       a.href = link.href;
@@ -218,7 +218,6 @@ export class CLIMBWidget extends Widget {
       list.appendChild(a);
     }
     container_fluid.appendChild(list);
-
   }
 
   private memory_usage: HTMLProgressElement;

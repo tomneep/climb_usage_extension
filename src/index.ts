@@ -19,7 +19,6 @@ export const cloudIcon = new LabIcon({
   svgstr: cloudIconSvg
 });
 
-
 /**
  * Activate the CLIMB widget extension.
  */
