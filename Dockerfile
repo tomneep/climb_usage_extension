@@ -25,6 +25,8 @@ RUN pip install --no-cache-dir jupyterlab && \
     jlpm install && jlpm run build && \
     jupyter labextension develop . --overwrite
 
+ENV JUPYTERHUB_USER=climb_user.climb_group
+
 # Expose JupyterLab port
 EXPOSE 8888
 
