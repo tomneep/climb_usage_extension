@@ -56,8 +56,8 @@ export class CLIMBWidget extends Widget {
     }
 
     // Volumes
-    this.volumeList = document.createElement('dl');
-    volumes_section.appendChild(this.volumeList);
+    const volumeList = document.createElement('dl');
+    volumes_section.appendChild(volumeList);
 
     requestAPI<any>('disk-usage')
       .then(volumes => {
@@ -72,8 +72,8 @@ export class CLIMBWidget extends Widget {
           dt.appendChild(label);
           dd.appendChild(progress);
 
-          this.volumeList.appendChild(dt);
-          this.volumeList.appendChild(dd);
+          volumeList.appendChild(dt);
+          volumeList.appendChild(dd);
         }
       })
       .catch(reason => {
@@ -230,7 +230,6 @@ export class CLIMBWidget extends Widget {
   private ncpus: number = 1;
 
   private descriptionList: HTMLDListElement;
-  private volumeList: HTMLDListElement;
 
   private intervalId: number | null = null;
   private pollInterval = 5000; // 5 seconds
