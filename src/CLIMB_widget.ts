@@ -12,8 +12,13 @@ export class CLIMBWidget extends Widget {
 
     this.createNavbar();
 
+    const info_section = document.createElement('section');
+    const volumes_section = document.createElement('section');
+    this.node.appendChild(info_section);
+    this.node.appendChild(volumes_section);
+
     this.descriptionList = document.createElement('dl');
-    this.node.appendChild(this.descriptionList);
+    info_section.appendChild(this.descriptionList);
 
     // Items to show
     // TODO: Make the ID prefix be determined programmatically
@@ -52,7 +57,7 @@ export class CLIMBWidget extends Widget {
 
     // Volumes
     this.volumeList = document.createElement('dl');
-    this.node.appendChild(this.volumeList);
+    volumes_section.appendChild(this.volumeList);
 
     requestAPI<any>('disk-usage')
       .then(volumes => {
@@ -67,8 +72,8 @@ export class CLIMBWidget extends Widget {
           dt.appendChild(label);
           dd.appendChild(progress);
 
-          this.descriptionList.appendChild(dt);
-          this.descriptionList.appendChild(dd);
+          this.volumeList.appendChild(dt);
+          this.volumeList.appendChild(dd);
         }
       })
       .catch(reason => {
