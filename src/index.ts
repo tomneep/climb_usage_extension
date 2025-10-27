@@ -12,6 +12,8 @@ import cloudIconSvg from '../style/icons/cloud.svg';
 
 import { CLIMBWidget } from './CLIMB_widget';
 
+import '../style/index.css';
+
 export const cloudIcon = new LabIcon({
   name: 'climb-jupyterlab-extension:cloud_icon',
   svgstr: cloudIconSvg

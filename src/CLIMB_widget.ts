@@ -8,6 +8,8 @@ export class CLIMBWidget extends Widget {
   constructor() {
     super();
 
+    this.node.className = 'onyx';
+
     this.createNavbar();
 
     this.descriptionList = document.createElement('dl');
@@ -206,7 +208,6 @@ export class CLIMBWidget extends Widget {
       a.textContent = link.label;
       a.target = '_blank'; // open in new tab
       a.rel = 'noopener noreferrer'; // security best practice
-      a.classList.add('text-blue-600', 'hover:underline');
       li.appendChild(a);
       list.appendChild(li);
     }
