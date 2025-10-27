@@ -13,7 +13,10 @@ export class CLIMBWidget extends Widget {
     this.createNavbar();
 
     const info_section = document.createElement('section');
+    // Pad the top by spacer
+    info_section.classList.add('pt-3');
     const volumes_section = document.createElement('section');
+    volumes_section.classList.add('pt-3');
     this.node.appendChild(info_section);
     this.node.appendChild(volumes_section);
 
@@ -197,7 +200,7 @@ export class CLIMBWidget extends Widget {
     this.node.appendChild(header);
     const nav = document.createElement('nav');
     header.appendChild(nav);
-    nav.classList.add('navbar', 'navbar-expand-md');
+    nav.classList.add('navbar', 'bg-dark', 'navbar-expand-md', 'fixed-top');
     nav.setAttribute('data-bs-theme', 'dark');
 
     const container_fluid = document.createElement('div');

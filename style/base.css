@@ -20,26 +20,7 @@ dd {
   margin: 0; /* remove default indent */
 }
 
-nav ul {
-    display: flex;
-}
-
-nav ul li {
-    margin: 1em;
-}
-
 progress {
     width: 100%;
 }
 
-.logo {
-    height: 5em;
-}
-
-nav {
-    background: black;
-}
-
-nav li {
-    color: white;
-}
