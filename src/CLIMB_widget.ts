@@ -192,6 +192,12 @@ export class CLIMBWidget extends Widget {
     this.node.appendChild(header);
     const nav = document.createElement('nav');
     header.appendChild(nav);
+    nav.classList.add('navbar', 'navbar-expand-md');
+    nav.setAttribute('data-bs-theme', 'dark');
+
+    const container_fluid = document.createElement('div');
+    container_fluid.className = 'container-fluid';
+    nav.appendChild(container_fluid);
 
         // Links
     const links = [
@@ -200,18 +206,18 @@ export class CLIMBWidget extends Widget {
       { label: 'Bryn', href: 'https://bryn.climb.ac.uk' }
     ];
 
-    const list = document.createElement('ul');
+    const list = document.createElement('div');
+    list.classList.add('navbar-nav')
     for (const link of links) {
-      const li = document.createElement('li');
       const a = document.createElement('a');
       a.href = link.href;
       a.textContent = link.label;
       a.target = '_blank'; // open in new tab
       a.rel = 'noopener noreferrer'; // security best practice
-      li.appendChild(a);
-      list.appendChild(li);
+      a.classList.add('nav-link');
+      list.appendChild(a);
     }
-    nav.appendChild(list);
+    container_fluid.appendChild(list);
 
   }
 
