@@ -12,11 +12,8 @@ export class CLIMBWidget extends Widget {
 
     this.createNavbar();
 
-    const info_section = this.createUserInfo();
-    this.node.appendChild(info_section);
-
-    const resource_section = this.createResourceInfo();
-    this.node.appendChild(resource_section);
+    this.node.appendChild(this.createUserInfo());
+    this.node.appendChild(this.createResourceInfo());
 
     const volumes_section = document.createElement('section');
     this.node.appendChild(volumes_section);
