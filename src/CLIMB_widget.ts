@@ -14,37 +14,7 @@ export class CLIMBWidget extends Widget {
 
     this.node.appendChild(this.createUserInfo());
     this.node.appendChild(this.createResourceInfo());
-
-    const volumes_section = document.createElement('section');
-    this.node.appendChild(volumes_section);
-    const volumes_card = this.makeCard('Volumes');
-    volumes_section.appendChild(volumes_card);
-    const volumes_card_body = volumes_card.children[1];
-
-    // Volumes
-    const volumeList = document.createElement('dl');
-    volumes_card_body.appendChild(volumeList);
-
-    requestAPI<any>('disk-usage')
-      .then(volumes => {
-        for (const item of volumes) {
-          const dt = document.createElement('dt');
-          const dd = document.createElement('dd');
-          const label = document.createTextNode(item.label);
-          const progress = document.createElement('progress');
-          // Not a prefix but the actual ID
-          progress.id = item.id_prefix;
-
-          dt.appendChild(label);
-          dd.appendChild(progress);
-
-          volumeList.appendChild(dt);
-          volumeList.appendChild(dd);
-        }
-      })
-      .catch(reason => {
-        console.error('Error getting volumes');
-      });
+    this.node.appendChild(this.createVolumeInfo());
 
     // Test to see if we have a GPU. This test is currently only
     // valid for NVIDIA GPUs (which is all we are using on CLIMB
@@ -263,6 +233,40 @@ export class CLIMBWidget extends Widget {
         );
       });
 
+    return section;
+  }
+
+  private createVolumeInfo(): HTMLElement {
+    const section = document.createElement('section');
+    this.node.appendChild(section);
+    const card = this.makeCard('Volumes');
+    section.appendChild(card);
+    const card_body = card.children[1];
+
+    // Volumes
+    const list = document.createElement('dl');
+    card_body.appendChild(list);
+
+    requestAPI<any>('disk-usage')
+      .then(volumes => {
+        for (const item of volumes) {
+          const dt = document.createElement('dt');
+          const dd = document.createElement('dd');
+          const label = document.createTextNode(item.label);
+          const progress = document.createElement('progress');
+          // Not a prefix but the actual ID
+          progress.id = item.id_prefix;
+
+          dt.appendChild(label);
+          dd.appendChild(progress);
+
+          list.appendChild(dt);
+          list.appendChild(dd);
+        }
+      })
+      .catch(reason => {
+        console.error('Error getting volumes');
+      });
     return section;
   }
 
