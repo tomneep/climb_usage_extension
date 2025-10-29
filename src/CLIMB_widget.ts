@@ -12,60 +12,17 @@ export class CLIMBWidget extends Widget {
 
     this.createNavbar();
 
-    const info_section = document.createElement('section');
-    // Pad the top by spacer
-    // info_section.classList.add('pt-3');
+    const info_section = this.createUserInfo();
+    this.node.appendChild(info_section);
 
-    const info_card = this.makeCard('User information');
-    info_section.appendChild(info_card);
-    const info_card_body = info_card.children[1];
+    const resource_section = this.createResourceInfo();
+    this.node.appendChild(resource_section);
 
     const volumes_section = document.createElement('section');
+    this.node.appendChild(volumes_section);
     const volumes_card = this.makeCard('Volumes');
     volumes_section.appendChild(volumes_card);
     const volumes_card_body = volumes_card.children[1];
-
-    // volumes_section.classList.add('pt-3');
-    this.node.appendChild(info_section);
-    this.node.appendChild(volumes_section);
-
-    const descriptionList = document.createElement('dl');
-    info_card_body.appendChild(descriptionList);
-
-    // Items to show
-    // TODO: Make the ID prefix be determined programmatically
-    const items = [
-      { label: 'User', id_prefix: 'user' },
-      { label: 'Group', id_prefix: 'group' },
-      { label: 'CPUs', id_prefix: 'cpus' },
-      { label: 'Memory usage', id_prefix: 'memory_usage' },
-      { label: 'CPU usage', id_prefix: 'cpu_usage' }
-    ];
-    for (const item of items) {
-      const dt = document.createElement('dt');
-      dt.id = item.id_prefix + '-dt';
-      const dd = document.createElement('dd');
-      dd.id = item.id_prefix + '-dd';
-      const label = document.createTextNode(item.label);
-
-      dt.appendChild(label);
-
-      descriptionList.appendChild(dt);
-      descriptionList.appendChild(dd);
-    }
-
-    this.memory_usage = document.createElement('progress');
-    // const mem_usage = document.createElement('dd');
-    const mem_usage = this.node.querySelector('#memory_usage-dd');
-    if (mem_usage) {
-      mem_usage.appendChild(this.memory_usage);
-    }
-
-    this.cpu_usage_progress = document.createElement('progress');
-    const cpu_usage = this.node.querySelector('#cpu_usage-dd');
-    if (cpu_usage) {
-      cpu_usage.appendChild(this.cpu_usage_progress);
-    }
 
     // Volumes
     const volumeList = document.createElement('dl');
@@ -90,43 +47,6 @@ export class CLIMBWidget extends Widget {
       })
       .catch(reason => {
         console.error('Error getting volumes');
-      });
-
-    // Get username and group on connection
-    requestAPI<any>('get-env')
-      .then(data => {
-        console.log(data);
-        let el = this.node.querySelector('#user-dd');
-        if (el) {
-          el.textContent = data['user'];
-        }
-        el = this.node.querySelector('#group-dd');
-        if (el) {
-          el.textContent = data['group'];
-        }
-      })
-      .catch(reason => {
-        console.error(
-          `The climb_usage_extension server extension appears to be missing.\n${reason}`
-        );
-      });
-
-    // Get username and group on connection
-    requestAPI<any>('limits')
-      .then(data => {
-        console.log(data);
-        this.ncpus = data['cpu_limit'] as number;
-        const el = this.node.querySelector('#cpus-dd');
-        if (el) {
-          el.textContent = String(this.ncpus);
-        }
-
-        this.memory_usage.max = data['max_memory'];
-      })
-      .catch(reason => {
-        console.error(
-          `The climb_usage_extension server extension appears to be missing.\n${reason}`
-        );
       });
 
     // Test to see if we have a GPU. This test is currently only
@@ -237,9 +157,121 @@ export class CLIMBWidget extends Widget {
     container_fluid.appendChild(list);
   }
 
+  private createUserInfo(): HTMLElement {
+    const info_section = document.createElement('section');
+    const info_card = this.makeCard('User information');
+    info_section.appendChild(info_card);
+    const info_card_body = info_card.children[1];
+
+    const descriptionList = document.createElement('dl');
+    info_card_body.appendChild(descriptionList);
+
+    // Store references while building
+    const elements: Record<string, HTMLElement> = {};
+
+    // Items to show
+    // TODO: Make the ID prefix be determined programmatically
+    const items = [
+      { label: 'User', id_prefix: 'user' },
+      { label: 'Group', id_prefix: 'group' }
+    ];
+    for (const item of items) {
+      const dt = document.createElement('dt');
+      dt.id = item.id_prefix + '-dt';
+      const dd = document.createElement('dd');
+      dd.id = item.id_prefix + '-dd';
+      const label = document.createTextNode(item.label);
+
+      dt.appendChild(label);
+
+      descriptionList.appendChild(dt);
+      descriptionList.appendChild(dd);
+      elements[item.id_prefix] = dd;
+    }
+
+    // Get username and group on connection
+    requestAPI<any>('get-env')
+      .then(data => {
+        console.log(data);
+        let el = elements['user'];
+        el.textContent = data['user'];
+        el = elements['group'];
+        el.textContent = data['group'];
+      })
+      .catch(reason => {
+        console.error(
+          `The climb_usage_extension server extension appears to be missing.\n${reason}`
+        );
+      });
+
+    return info_section;
+  }
+
+  private createResourceInfo(): HTMLElement {
+    const section = document.createElement('section');
+    const card = this.makeCard('Resources');
+    section.appendChild(card);
+    const card_body = card.children[1];
+
+    const descriptionList = document.createElement('dl');
+    card_body.appendChild(descriptionList);
+
+    // Items to show
+    // TODO: Make the ID prefix be determined programmatically
+
+    // Store references while building
+    const elements: Record<string, HTMLElement> = {};
+
+    const items = [
+      { label: 'CPUs', id_prefix: 'cpus' },
+      { label: 'Memory usage', id_prefix: 'memory_usage' },
+      { label: 'CPU usage', id_prefix: 'cpu_usage' }
+    ];
+    for (const item of items) {
+      const dt = document.createElement('dt');
+      dt.id = item.id_prefix + '-dt';
+      const dd = document.createElement('dd');
+      dd.id = item.id_prefix + '-dd';
+      const label = document.createTextNode(item.label);
+
+      dt.appendChild(label);
+
+      descriptionList.appendChild(dt);
+      descriptionList.appendChild(dd);
+      elements[item.id_prefix] = dd;
+    }
+
+    this.memory_usage = document.createElement('progress');
+    // const mem_usage = document.createElement('dd');
+    const mem_usage = elements['memory_usage'];
+    mem_usage.appendChild(this.memory_usage);
+
+    this.cpu_usage_progress = document.createElement('progress');
+    const cpu_usage = elements['cpu_usage'];
+    cpu_usage.appendChild(this.cpu_usage_progress);
+
+    // Get username and group on connection
+    requestAPI<any>('limits')
+      .then(data => {
+        console.log(data);
+        this.ncpus = data['cpu_limit'] as number;
+        const el = elements['cpus'];
+        el.textContent = String(this.ncpus);
+
+        this.memory_usage.max = data['max_memory'];
+      })
+      .catch(reason => {
+        console.error(
+          `The climb_usage_extension server extension appears to be missing.\n${reason}`
+        );
+      });
+
+    return section;
+  }
+
   private makeCard(title: string): HTMLElement {
     const card = document.createElement('div');
-    card.classList.add('card', 'p-3', 'm-3');
+    card.classList.add('card', 'p-3', 'm-2');
 
     const card_title = document.createElement('h5');
     card_title.className = 'card-title';
@@ -254,8 +286,10 @@ export class CLIMBWidget extends Widget {
     return card;
   }
 
-  private memory_usage: HTMLProgressElement;
-  private cpu_usage_progress: HTMLProgressElement;
+  // These are marked with ! because typescipt is unhappy we aren't
+  // directly assigning them in the constructor
+  private memory_usage!: HTMLProgressElement;
+  private cpu_usage_progress!: HTMLProgressElement;
   private ncpus: number = 1;
 
   private intervalId: number | null = null;
