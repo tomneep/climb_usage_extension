@@ -14,14 +14,23 @@ export class CLIMBWidget extends Widget {
 
     const info_section = document.createElement('section');
     // Pad the top by spacer
-    info_section.classList.add('pt-3');
+    // info_section.classList.add('pt-3');
+
+    const info_card = this.makeCard('User information');
+    info_section.appendChild(info_card);
+    const info_card_body = info_card.children[1];
+
     const volumes_section = document.createElement('section');
-    volumes_section.classList.add('pt-3');
+    const volumes_card = this.makeCard('Volumes');
+    volumes_section.appendChild(volumes_card);
+    const volumes_card_body = volumes_card.children[1];
+
+    // volumes_section.classList.add('pt-3');
     this.node.appendChild(info_section);
     this.node.appendChild(volumes_section);
 
     const descriptionList = document.createElement('dl');
-    info_section.appendChild(descriptionList);
+    info_card_body.appendChild(descriptionList);
 
     // Items to show
     // TODO: Make the ID prefix be determined programmatically
@@ -60,7 +69,7 @@ export class CLIMBWidget extends Widget {
 
     // Volumes
     const volumeList = document.createElement('dl');
-    volumes_section.appendChild(volumeList);
+    volumes_card_body.appendChild(volumeList);
 
     requestAPI<any>('disk-usage')
       .then(volumes => {
@@ -226,6 +235,23 @@ export class CLIMBWidget extends Widget {
       list.appendChild(a);
     }
     container_fluid.appendChild(list);
+  }
+
+  private makeCard(title: string): HTMLElement {
+    const card = document.createElement('div');
+    card.classList.add('card', 'p-3', 'm-3');
+
+    const card_title = document.createElement('h5');
+    card_title.className = 'card-title';
+    card_title.innerText = title;
+
+    const card_body = document.createElement('div');
+    card_body.className = 'card-body';
+
+    card.appendChild(card_title);
+    card.appendChild(card_body);
+
+    return card;
   }
 
   private memory_usage: HTMLProgressElement;
