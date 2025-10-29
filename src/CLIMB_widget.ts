@@ -20,8 +20,8 @@ export class CLIMBWidget extends Widget {
     this.node.appendChild(info_section);
     this.node.appendChild(volumes_section);
 
-    this.descriptionList = document.createElement('dl');
-    info_section.appendChild(this.descriptionList);
+    const descriptionList = document.createElement('dl');
+    info_section.appendChild(descriptionList);
 
     // Items to show
     // TODO: Make the ID prefix be determined programmatically
@@ -41,8 +41,8 @@ export class CLIMBWidget extends Widget {
 
       dt.appendChild(label);
 
-      this.descriptionList.appendChild(dt);
-      this.descriptionList.appendChild(dd);
+      descriptionList.appendChild(dt);
+      descriptionList.appendChild(dd);
     }
 
     this.memory_usage = document.createElement('progress');
@@ -231,8 +231,6 @@ export class CLIMBWidget extends Widget {
   private memory_usage: HTMLProgressElement;
   private cpu_usage_progress: HTMLProgressElement;
   private ncpus: number = 1;
-
-  private descriptionList: HTMLDListElement;
 
   private intervalId: number | null = null;
   private pollInterval = 5000; // 5 seconds
