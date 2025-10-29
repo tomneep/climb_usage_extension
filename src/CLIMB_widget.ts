@@ -10,8 +10,10 @@ export class CLIMBWidget extends Widget {
 
     this.node.className = 'onyx';
 
-    this.createNavbar();
+    // This should probably be called createHeader instead
+    this.node.appendChild(this.createNavbar());
 
+    // These sections will appear all the time
     this.node.appendChild(this.createUserInfo());
     this.node.appendChild(this.createResourceInfo());
     this.node.appendChild(this.createVolumeInfo());
@@ -91,9 +93,8 @@ export class CLIMBWidget extends Widget {
     }
   }
 
-  private createNavbar(): void {
+  private createNavbar(): HTMLElement {
     const header = document.createElement('header');
-    this.node.appendChild(header);
     const nav = document.createElement('nav');
     header.appendChild(nav);
     nav.classList.add('navbar', 'bg-dark', 'navbar-expand-md', 'fixed-top');
@@ -122,6 +123,7 @@ export class CLIMBWidget extends Widget {
       list.appendChild(a);
     }
     container_fluid.appendChild(list);
+    return header
   }
 
   private createUserInfo(): HTMLElement {
