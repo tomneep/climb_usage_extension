@@ -8,7 +8,7 @@ export class CLIMBWidget extends Widget {
   constructor() {
     super();
 
-    this.node.className = 'onyx';
+    this.node.classList.add('onyx', 'climb-stats');
 
     // This should probably be called createHeader instead
     this.node.appendChild(this.createNavbar());
@@ -68,15 +68,15 @@ export class CLIMBWidget extends Widget {
     }
 
     // GPU Stats
-    if (this.hasGPU) {
-      console.log('Getting GPU stats');
-      try {
-        const data = await requestAPI<any>('gpu-stats');
-        console.log(data);
-      } catch (err) {
-        console.error('Error fetching metrics:', err);
-      }
-    }
+    // if (this.hasGPU) {
+    //   console.log('Getting GPU stats');
+    //   try {
+    //     const data = await requestAPI<any>('gpu-stats');
+    //     console.log(data);
+    //   } catch (err) {
+    //     console.error('Error fetching metrics:', err);
+    //   }
+    // }
   }
 
   onAfterAttach(): void {

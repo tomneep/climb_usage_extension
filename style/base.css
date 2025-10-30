@@ -24,3 +24,8 @@ progress {
     width: 100%;
 }
 
+.climb-stats {
+  overflow: auto;
+  height: 100%;
+}
+
