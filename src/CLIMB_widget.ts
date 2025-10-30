@@ -24,6 +24,9 @@ export class CLIMBWidget extends Widget {
     requestAPI<any>('has-gpu')
       .then(data => {
         this.hasGPU = data['has_gpu'];
+        if (this.hasGPU) {
+          this.node.appendChild(this.createGPUInfo());
+        }
       })
       .catch(reason => {
         console.error(
@@ -123,7 +126,7 @@ export class CLIMBWidget extends Widget {
       list.appendChild(a);
     }
     container_fluid.appendChild(list);
-    return header
+    return header;
   }
 
   private createUserInfo(): HTMLElement {
@@ -268,6 +271,44 @@ export class CLIMBWidget extends Widget {
       .catch(reason => {
         console.error('Error getting volumes');
       });
+    return section;
+  }
+
+  private createGPUInfo(): HTMLElement {
+    const section = document.createElement('section');
+    const card = this.makeCard('GPU');
+    section.appendChild(card);
+    const card_body = card.children[1];
+
+    const list = document.createElement('dl');
+    card_body.appendChild(list);
+
+    // Store references while building
+    const elements: Record<string, HTMLElement> = {};
+
+    const items = [{ label: 'GPU', id_prefix: 'gpu' }];
+    for (const item of items) {
+      const dt = document.createElement('dt');
+      dt.id = item.id_prefix + '-dt';
+      const dd = document.createElement('dd');
+      dd.id = item.id_prefix + '-dd';
+      const label = document.createTextNode(item.label);
+
+      dt.appendChild(label);
+
+      list.appendChild(dt);
+      list.appendChild(dd);
+      elements[item.id_prefix] = dd;
+    }
+
+    requestAPI<any>('gpu-info')
+      .then(info => {
+        elements["gpu"].textContent = info['name'];
+      })
+      .catch(reason => {
+        console.error('Error getting GPU info');
+      });
+
     return section;
   }
 

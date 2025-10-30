@@ -177,15 +177,15 @@ class HasGPUHandler(APIHandler):
         return self.finish(json.dumps({"has_gpu": has_gpu}))
 
 
-@add_to_handlers("gpu-stats")
-class GPUStatsHandler(APIHandler):
+@add_to_handlers("gpu-info")
+class GPUInfoHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
-        # import pynvml
-        # pynvml.nvmlInit()
-        # handle = pynvml.nvmlDeviceGetHandleByIndex(0)
-        # return self.finish(json.dumps({"handle": handle}))
-        return self.finish(json.dumps({"handle": "handle"}))
+        import pynvml
+        pynvml.nvmlInit()
+        handle = pynvml.nvmlDeviceGetHandleByIndex(0)
+        name = pynvml.nvmlDeviceGetName(handle)
+        return self.finish(json.dumps({"name": name}))
 
 
 def setup_handlers(web_app):
