@@ -240,7 +240,6 @@ export class CLIMBWidget extends Widget {
 
   private createVolumeInfo(): HTMLElement {
     const section = document.createElement('section');
-    this.node.appendChild(section);
     const card = this.makeCard('Volumes');
     section.appendChild(card);
     const card_body = card.children[1];
