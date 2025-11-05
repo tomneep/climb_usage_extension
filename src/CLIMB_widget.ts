@@ -38,7 +38,13 @@ export class CLIMBWidget extends Widget {
   async onUpdateRequest(): Promise<void> {
     try {
       const data = await requestAPI<any>('current-memory');
-      this.memory_usage.value = data['value'];
+      const mem_usage = data['value'];
+      this.memory_usage.setAttribute('aria-valuenow', mem_usage);
+      const width =
+        (100 * parseFloat(mem_usage)) /
+        parseFloat(this.memory_usage.getAttribute('aria-valuemax')!);
+      this.memory_usage.children[0].setAttribute('style', `width: ${width}%`);
+      this.memory_usage.children[0].textContent = `${(mem_usage / 2 ** 30).toFixed(2)}GB`;
     } catch (err) {
       console.error('Error fetching metrics:', err);
     }
@@ -47,7 +53,12 @@ export class CLIMBWidget extends Widget {
       const data = await requestAPI<any>('cpu-usage');
       const value: number = parseFloat(data['value']);
       const usage = value / this.ncpus;
-      this.cpu_usage_progress.value = usage;
+      this.cpu_usage_progress.children[0].setAttribute(
+        'style',
+        `width: ${100 * usage}%`
+      );
+      this.cpu_usage_progress.children[0].textContent = `${Math.round(100 * usage)}%`;
+      // this.cpu_usage_progress.value = usage;
     } catch (err) {
       console.error('Error fetching metrics:', err);
     }
@@ -57,10 +68,15 @@ export class CLIMBWidget extends Widget {
       for (const vol of data) {
         const progress = this.node.querySelector(
           '#' + vol.id_prefix
-        ) as HTMLProgressElement;
+        ) as HTMLElement;
         if (progress) {
-          progress.value = vol['data']['used'];
-          progress.max = vol['data']['total'];
+          progress.setAttribute('aria-valuemax', vol['data']['total']);
+          progress.setAttribute('aria-valuenow', vol['data']['used']);
+          const width =
+            (100 * parseFloat(vol['data']['used'])) /
+            parseFloat(vol['data']['total']);
+          progress.children[0].setAttribute('style', `width: ${width}%`);
+          progress.children[0].textContent = `${Math.round(width)}%`;
         }
       }
     } catch (err) {
@@ -213,12 +229,13 @@ export class CLIMBWidget extends Widget {
       elements[item.id_prefix] = dd;
     }
 
-    this.memory_usage = document.createElement('progress');
-    // const mem_usage = document.createElement('dd');
+    // this.memory_usage = document.createElement('progress');
+    this.memory_usage = this.makeProgressBar();
     const mem_usage = elements['memory_usage'];
     mem_usage.appendChild(this.memory_usage);
 
-    this.cpu_usage_progress = document.createElement('progress');
+    // this.cpu_usage_progress = document.createElement('progress');
+    this.cpu_usage_progress = this.makeProgressBar();
     const cpu_usage = elements['cpu_usage'];
     cpu_usage.appendChild(this.cpu_usage_progress);
 
@@ -230,7 +247,8 @@ export class CLIMBWidget extends Widget {
         const el = elements['cpus'];
         el.textContent = String(this.ncpus);
 
-        this.memory_usage.max = data['max_memory'];
+        // this.memory_usage.max = data['max_memory'];
+        this.memory_usage.setAttribute('aria-valuemax', data['max_memory']);
       })
       .catch(reason => {
         console.error(
@@ -257,7 +275,7 @@ export class CLIMBWidget extends Widget {
           const dt = document.createElement('dt');
           const dd = document.createElement('dd');
           const label = document.createTextNode(item.label);
-          const progress = document.createElement('progress');
+          const progress = this.makeProgressBar();
           // Not a prefix but the actual ID
           progress.id = item.id_prefix;
 
@@ -303,7 +321,7 @@ export class CLIMBWidget extends Widget {
 
     requestAPI<any>('gpu-info')
       .then(info => {
-        elements["gpu"].textContent = info['name'];
+        elements['gpu'].textContent = info['name'];
       })
       .catch(reason => {
         console.error('Error getting GPU info');
@@ -329,10 +347,27 @@ export class CLIMBWidget extends Widget {
     return card;
   }
 
+  private makeProgressBar(): HTMLElement {
+    const progress = document.createElement('div');
+    progress.className = 'progress';
+    progress.setAttribute('role', 'progressbar');
+    progress.setAttribute('aria-label', 'Progress bar'); // FIX
+    progress.setAttribute('aria-valuenow', '0');
+    progress.setAttribute('aria-valuemin', '0');
+    progress.setAttribute('aria-valuemax', '100');
+
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    bar.setAttribute('style', 'width: 0%');
+    progress.appendChild(bar);
+
+    return progress;
+  }
+
   // These are marked with ! because typescipt is unhappy we aren't
   // directly assigning them in the constructor
-  private memory_usage!: HTMLProgressElement;
-  private cpu_usage_progress!: HTMLProgressElement;
+  private memory_usage!: HTMLElement;
+  private cpu_usage_progress!: HTMLElement;
   private ncpus: number = 1;
 
   private intervalId: number | null = null;
