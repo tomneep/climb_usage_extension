@@ -37,27 +37,30 @@ class EnvHandler(APIHandler):
         self.finish(json.dumps(out))
 
 
-# WARNING: You might think that getting the number of CPUs this way is
-# odd, considering there are methods like os.cpu_count() and
-# psutil.cpu_count(), however, these will return the CPU count of the
-# entire node and not of the container. There is a python bug here:
-# https://bugs.python.org/issue36054
-@add_to_handlers("limits")
-class LimitsHandler(APIHandler):
-    """
-    Get CPU and memory limits.
+@add_to_handlers("resources")
+class ResourceUsageHandler(APIHandler):
+    """Get information about resource usage (memory/CPU)."""
 
-    Originally I was getting CPU and memory limits from environment
-    variables set in CLIMB. Getting them from `/sys/fs/cgroup` allows
-    testing to be done without requiring those variables.
+    previous_time = None
+    previous_value = None
 
-    Note that since this extension is targeting a very specific
-    platform (the CLIMB jupyter lab environment), there is little
-    effort made to offer fallbacks or check whether files actually exist.
-    """
+    @staticmethod
+    def current_memory():
+        # Note that psutil can't be used to get the memory usage
+        # inside a container (correct as of 2025/10/09) See:
+        # https://github.com/giampaolo/psutil/issues/2100
+        with Path("/sys/fs/cgroup/memory.current").open() as f:
+            current_memory = f.read().strip()
+        return {"memory_now": current_memory}
 
-    @tornado.web.authenticated
-    def get(self):
+    @staticmethod
+    def limits():
+        # WARNING: You might think that getting the number of CPUs
+        # this way is odd, considering there are methods like
+        # os.cpu_count() and psutil.cpu_count(), however, these will
+        # return the CPU count of the entire node and not of the
+        # container. There is a python bug here:
+        # https://bugs.python.org/issue36054
         memory_path = Path("/sys/fs/cgroup/memory.max")
         cpu_path = Path("/sys/fs/cgroup/cpu.max")
 
@@ -77,42 +80,16 @@ class LimitsHandler(APIHandler):
             except ValueError:
                 cpu_limit = 1
 
-        out = {"max_memory": max_memory, "cpu_limit": cpu_limit}
-        self.finish(json.dumps(out))
+        return {"memory_max": max_memory, "cpus": cpu_limit}
 
-
-# Note that psutil can't be used to get the memory usage inside a
-# container (correct as of 2025/10/09) See:
-# https://github.com/giampaolo/psutil/issues/2100
-@add_to_handlers("current-memory")
-class CurrentMemHandler(APIHandler):
-    """Read the current memory usage."""
-    @tornado.web.authenticated
-    def get(self):
-        path = Path("/sys/fs/cgroup/memory.current")
-
-        with path.open() as f:
-            current_memory = f.read().strip()
-
-        self.finish(json.dumps({"value": current_memory}))
-
-
-# See above warnings about why we can't just use psutil for the CPU
-# usage
-@add_to_handlers("cpu-usage")
-class CpuUsageHandler(APIHandler):
-    """Read the current CPU usage since last call."""
-    previous_time = None
-    previous_value = None
-
-    @tornado.web.authenticated
-    def get(self):
+    def current_cpu(self):
+        # See above warnings about why we can't just use psutil for
+        # the CPU usage
         path = Path("/sys/fs/cgroup/cpu.stat")
 
         # If we don't have this path then lets just leave here
         if not path.exists():
-            self.finish(json.dumps({"value": 0}))
-            return
+            return {"cpu_now": 0}
 
         data = {}
         with path.open() as f:
@@ -132,7 +109,14 @@ class CpuUsageHandler(APIHandler):
         cls.previous_time = current_time
         cls.previous_value = current_value
 
-        self.finish(json.dumps({"value": x}))
+        return {"cpu_now": x}
+
+    @tornado.web.authenticated
+    def get(self):
+        output = self.current_memory() | self.current_cpu() | self.limits()
+        # Scale CPU usage by number of CPUs
+        output["cpu_now"] /= output["cpus"]
+        self.finish(json.dumps(output))
 
 
 @add_to_handlers("disk-usage")
@@ -141,6 +125,7 @@ class DiskUsageHandler(APIHandler):
 
     Currently gets home drive and /shared/team.
     """
+
     @tornado.web.authenticated
     def get(self):
         output = []
@@ -182,6 +167,7 @@ class GPUInfoHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
         import pynvml
+
         pynvml.nvmlInit()
         handle = pynvml.nvmlDeviceGetHandleByIndex(0)
         name = pynvml.nvmlDeviceGetName(handle)

@@ -37,19 +37,11 @@ export class CLIMBWidget extends Widget {
 
   async onUpdateRequest(): Promise<void> {
     try {
-      const data = await requestAPI<any>('current-memory');
-      this.memory_usage.value = data['value'];
+      const data = await requestAPI<any>('resources');
+      this.memory_usage.value = data['memory_now'];
+      this.cpu_usage_progress.value = data['cpu_now'];
     } catch (err) {
-      console.error('Error fetching metrics:', err);
-    }
-
-    try {
-      const data = await requestAPI<any>('cpu-usage');
-      const value: number = parseFloat(data['value']);
-      const usage = value / this.ncpus;
-      this.cpu_usage_progress.value = usage;
-    } catch (err) {
-      console.error('Error fetching metrics:', err);
+      console.error('Error fetching resource metrics:', err);
     }
 
     try {
@@ -223,14 +215,14 @@ export class CLIMBWidget extends Widget {
     cpu_usage.appendChild(this.cpu_usage_progress);
 
     // Get username and group on connection
-    requestAPI<any>('limits')
+    requestAPI<any>('resources')
       .then(data => {
         console.log(data);
-        this.ncpus = data['cpu_limit'] as number;
+        this.ncpus = data['cpus'] as number;
         const el = elements['cpus'];
         el.textContent = String(this.ncpus);
 
-        this.memory_usage.max = data['max_memory'];
+        this.memory_usage.max = data['memory_max'];
       })
       .catch(reason => {
         console.error(
@@ -303,7 +295,7 @@ export class CLIMBWidget extends Widget {
 
     requestAPI<any>('gpu-info')
       .then(info => {
-        elements["gpu"].textContent = info['name'];
+        elements['gpu'].textContent = info['name'];
       })
       .catch(reason => {
         console.error('Error getting GPU info');
