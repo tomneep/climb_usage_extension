@@ -87,6 +87,7 @@ class LimitsHandler(APIHandler):
 @add_to_handlers("current-memory")
 class CurrentMemHandler(APIHandler):
     """Read the current memory usage."""
+
     @tornado.web.authenticated
     def get(self):
         path = Path("/sys/fs/cgroup/memory.current")
@@ -102,6 +103,7 @@ class CurrentMemHandler(APIHandler):
 @add_to_handlers("cpu-usage")
 class CpuUsageHandler(APIHandler):
     """Read the current CPU usage since last call."""
+
     previous_time = None
     previous_value = None
 
@@ -135,12 +137,84 @@ class CpuUsageHandler(APIHandler):
         self.finish(json.dumps({"value": x}))
 
 
+@add_to_handlers("resources")
+class ResourceUsageHandler(APIHandler):
+    """Get information about resource usage (memory/CPU)."""
+
+    previous_time = None
+    previous_value = None
+
+    @staticmethod
+    def current_memory():
+        with Path("/sys/fs/cgroup/memory.current").open() as f:
+            current_memory = f.read().strip()
+        return {"memory_now": current_memory}
+
+    @staticmethod
+    def limits():
+        memory_path = Path("/sys/fs/cgroup/memory.max")
+        cpu_path = Path("/sys/fs/cgroup/cpu.max")
+
+        with memory_path.open() as f:
+            max_memory = f.read().strip()
+            if max_memory == "max":
+                # Set some kind of dummy value for now (16 GB)
+                max_memory = 2**30
+
+        with cpu_path.open() as f:
+            line = f.read().strip()
+            cpu_limit, period = line.split()
+            # CPU limit can be "max", in which case we are a bit
+            # stuck here! Let's just set it to 1 and see
+            try:
+                cpu_limit = float(cpu_limit) / int(period)
+            except ValueError:
+                cpu_limit = 1
+
+        return {"memory_max": max_memory, "cpus": cpu_limit}
+
+    def current_cpu(self):
+        path = Path("/sys/fs/cgroup/cpu.stat")
+
+        # If we don't have this path then lets just leave here
+        if not path.exists():
+            return {"cpu_now": 0}
+
+        data = {}
+        with path.open() as f:
+            current_time = time.time()
+            for line in f:
+                key, _, value = line.partition(" ")
+                data[key] = value
+        current_value = int(data["usage_usec"])
+
+        cls = self.__class__
+        x = 0
+        if cls.previous_value is not None:
+            t_diff = current_time - cls.previous_time
+            v_diff = current_value - cls.previous_value
+            x = v_diff / (t_diff * 1e6)
+
+        cls.previous_time = current_time
+        cls.previous_value = current_value
+
+        return {"cpu_now": x}
+
+    @tornado.web.authenticated
+    def get(self):
+        output = self.current_memory() | self.current_cpu() | self.limits()
+        # Scale CPU usage by number of CPUs
+        output["cpu_now"] /= output["cpus"]
+        self.finish(json.dumps(output))
+
+
 @add_to_handlers("disk-usage")
 class DiskUsageHandler(APIHandler):
     """Get disk usage.
 
     Currently gets home drive and /shared/team.
     """
+
     @tornado.web.authenticated
     def get(self):
         output = []
@@ -182,6 +256,7 @@ class GPUInfoHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
         import pynvml
+
         pynvml.nvmlInit()
         handle = pynvml.nvmlDeviceGetHandleByIndex(0)
         name = pynvml.nvmlDeviceGetName(handle)
