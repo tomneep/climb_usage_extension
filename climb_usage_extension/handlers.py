@@ -37,106 +37,6 @@ class EnvHandler(APIHandler):
         self.finish(json.dumps(out))
 
 
-# WARNING: You might think that getting the number of CPUs this way is
-# odd, considering there are methods like os.cpu_count() and
-# psutil.cpu_count(), however, these will return the CPU count of the
-# entire node and not of the container. There is a python bug here:
-# https://bugs.python.org/issue36054
-@add_to_handlers("limits")
-class LimitsHandler(APIHandler):
-    """
-    Get CPU and memory limits.
-
-    Originally I was getting CPU and memory limits from environment
-    variables set in CLIMB. Getting them from `/sys/fs/cgroup` allows
-    testing to be done without requiring those variables.
-
-    Note that since this extension is targeting a very specific
-    platform (the CLIMB jupyter lab environment), there is little
-    effort made to offer fallbacks or check whether files actually exist.
-    """
-
-    @tornado.web.authenticated
-    def get(self):
-        memory_path = Path("/sys/fs/cgroup/memory.max")
-        cpu_path = Path("/sys/fs/cgroup/cpu.max")
-
-        with memory_path.open() as f:
-            max_memory = f.read().strip()
-            if max_memory == "max":
-                # Set some kind of dummy value for now (16 GB)
-                max_memory = 2**30
-
-        with cpu_path.open() as f:
-            line = f.read().strip()
-            cpu_limit, period = line.split()
-            # CPU limit can be "max", in which case we are a bit
-            # stuck here! Let's just set it to 1 and see
-            try:
-                cpu_limit = float(cpu_limit) / int(period)
-            except ValueError:
-                cpu_limit = 1
-
-        out = {"max_memory": max_memory, "cpu_limit": cpu_limit}
-        self.finish(json.dumps(out))
-
-
-# Note that psutil can't be used to get the memory usage inside a
-# container (correct as of 2025/10/09) See:
-# https://github.com/giampaolo/psutil/issues/2100
-@add_to_handlers("current-memory")
-class CurrentMemHandler(APIHandler):
-    """Read the current memory usage."""
-
-    @tornado.web.authenticated
-    def get(self):
-        path = Path("/sys/fs/cgroup/memory.current")
-
-        with path.open() as f:
-            current_memory = f.read().strip()
-
-        self.finish(json.dumps({"value": current_memory}))
-
-
-# See above warnings about why we can't just use psutil for the CPU
-# usage
-@add_to_handlers("cpu-usage")
-class CpuUsageHandler(APIHandler):
-    """Read the current CPU usage since last call."""
-
-    previous_time = None
-    previous_value = None
-
-    @tornado.web.authenticated
-    def get(self):
-        path = Path("/sys/fs/cgroup/cpu.stat")
-
-        # If we don't have this path then lets just leave here
-        if not path.exists():
-            self.finish(json.dumps({"value": 0}))
-            return
-
-        data = {}
-        with path.open() as f:
-            current_time = time.time()
-            for line in f:
-                key, _, value = line.partition(" ")
-                data[key] = value
-        current_value = int(data["usage_usec"])
-
-        cls = self.__class__
-        x = 0
-        if cls.previous_value is not None:
-            t_diff = current_time - cls.previous_time
-            v_diff = current_value - cls.previous_value
-            x = v_diff / (t_diff * 1e6)
-
-        cls.previous_time = current_time
-        cls.previous_value = current_value
-
-        self.finish(json.dumps({"value": x}))
-
-
 @add_to_handlers("resources")
 class ResourceUsageHandler(APIHandler):
     """Get information about resource usage (memory/CPU)."""
@@ -146,12 +46,21 @@ class ResourceUsageHandler(APIHandler):
 
     @staticmethod
     def current_memory():
+        # Note that psutil can't be used to get the memory usage
+        # inside a container (correct as of 2025/10/09) See:
+        # https://github.com/giampaolo/psutil/issues/2100
         with Path("/sys/fs/cgroup/memory.current").open() as f:
             current_memory = f.read().strip()
         return {"memory_now": current_memory}
 
     @staticmethod
     def limits():
+        # WARNING: You might think that getting the number of CPUs
+        # this way is odd, considering there are methods like
+        # os.cpu_count() and psutil.cpu_count(), however, these will
+        # return the CPU count of the entire node and not of the
+        # container. There is a python bug here:
+        # https://bugs.python.org/issue36054
         memory_path = Path("/sys/fs/cgroup/memory.max")
         cpu_path = Path("/sys/fs/cgroup/cpu.max")
 
@@ -174,6 +83,8 @@ class ResourceUsageHandler(APIHandler):
         return {"memory_max": max_memory, "cpus": cpu_limit}
 
     def current_cpu(self):
+        # See above warnings about why we can't just use psutil for
+        # the CPU usage
         path = Path("/sys/fs/cgroup/cpu.stat")
 
         # If we don't have this path then lets just leave here
