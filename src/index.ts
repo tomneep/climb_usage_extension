@@ -19,6 +19,7 @@ export const cloudIcon = new LabIcon({
   svgstr: cloudIconSvg
 });
 
+import { CLIMBReactWidget } from "./CLIMB_react_widget";
 /**
  * Activate the CLIMB widget extension.
  */
@@ -62,11 +63,43 @@ function activate(
     }
   });
 
+
+  const newReactWidget = () => {
+    const content = new CLIMBReactWidget();
+    const main_widget = new MainAreaWidget({ content });
+    main_widget.id = 'climb_react_widget'
+    main_widget.title.label = 'CLIMB React Widget';
+    main_widget.title.icon = cloudIcon;
+    main_widget.title.closable = true;
+
+    return main_widget;
+  };
+
+  let climb_react_widget: MainAreaWidget<CLIMBReactWidget> = newReactWidget();
+
+  const react_command: string = 'climb:react:open';
+  app.commands.addCommand(react_command, {
+    label: 'CLIMB React dashboard',
+    caption: 'CLIMB React dashboard',
+    icon: cloudIcon,
+    execute: () => {
+      if (climb_react_widget.isDisposed) {
+        climb_react_widget = newReactWidget();
+      }
+      if (!climb_react_widget.isAttached) {
+        app.shell.add(climb_react_widget, 'main');
+      }
+      app.shell.activateById(climb_react_widget.id);
+    }
+  })
+
   // Add the command to the palette.
   palette.addItem({ command, category: 'CLIMB' });
+  palette.addItem({ command: react_command, category: 'CLIMB' });
 
   if (launcher) {
     launcher.add({ command, category: 'CLIMB' });
+    launcher.add({ command: react_command, category: 'CLIMB' });
   }
 }
 
