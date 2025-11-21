@@ -21,7 +21,7 @@ dd {
 }
 
 progress {
-    width: 100%;
+  width: 100%;
 }
 
 .climb-stats {
@@ -30,5 +30,5 @@ progress {
 }
 
 .onyx .card-body dl {
-    margin-bottom: 0pt;
+  margin-bottom: 0pt;
 }
