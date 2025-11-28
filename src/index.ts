@@ -63,7 +63,6 @@ function activate(
     }
   });
 
-
   const newReactWidget = () => {
     const content = new CLIMBReactWidget();
     const main_widget = new MainAreaWidget({ content });

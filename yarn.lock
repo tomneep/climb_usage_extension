@@ -1919,7 +1919,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:^5.3.7":
+"bootstrap@npm:^5.3.7, bootstrap@npm:^5.3.8":
   version: 5.3.8
   resolution: "bootstrap@npm:5.3.8"
   peerDependencies:
@@ -2046,6 +2046,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"climb-dashboard-gui@file:../../react-climb-dashboard-gui::locator=climb_usage_extension%40workspace%3A.":
+  version: 0.1.0
+  resolution: "climb-dashboard-gui@file:../../react-climb-dashboard-gui#../../react-climb-dashboard-gui::hash=370b01&locator=climb_usage_extension%40workspace%3A."
+  dependencies:
+    bootstrap: ^5.3.8
+    react-bootstrap: ^2.10.10
+  peerDependencies:
+    react: ^17.0.2
+    react-dom: ^17.0.2
+  checksum: 49f39deb0fc98579189b43d7b5fab2dd88a9e066d46decbc044827a5178813a831bcabd58f09344bbfe78b053840865be067e4739166f41ffb6dd59c587a9ddc
+  languageName: node
+  linkType: hard
+
 "climb-onyx-gui@npm:^0.16.3":
   version: 0.16.3
   resolution: "climb-onyx-gui@npm:0.16.3"
@@ -2090,6 +2103,7 @@ __metadata:
     "@types/react-addons-linked-state-mixin": ^0.14.22
     "@typescript-eslint/eslint-plugin": ^6.1.0
     "@typescript-eslint/parser": ^6.1.0
+    climb-dashboard-gui: ../../react-climb-dashboard-gui
     climb-onyx-gui: ^0.16.3
     css-loader: ^6.7.1
     eslint: ^8.36.0
@@ -4359,7 +4373,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-bootstrap@npm:^2.10.2":
+"react-bootstrap@npm:^2.10.10, react-bootstrap@npm:^2.10.2":
   version: 2.10.10
   resolution: "react-bootstrap@npm:2.10.10"
   dependencies:
