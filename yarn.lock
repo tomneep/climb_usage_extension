@@ -400,13 +400,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/ibm-plex-sans@npm:^5.1.1":
-  version: 5.2.8
-  resolution: "@fontsource/ibm-plex-sans@npm:5.2.8"
-  checksum: 36b9ad58c88cdf6e20f1a67d3a77aaa7fc1d35e6b762d4dcd77d0185c8dc9ba0c92500307fc583235bfdbe006ef8f182889a689d11fb2813c10f15f3da4297c6
-  languageName: node
-  linkType: hard
-
 "@fortawesome/fontawesome-free@npm:^5.12.0":
   version: 5.15.4
   resolution: "@fortawesome/fontawesome-free@npm:5.15.4"
@@ -2046,31 +2039,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"climb-dashboard-gui@file:../../react-climb-dashboard-gui::locator=climb_usage_extension%40workspace%3A.":
+"climb-dashboard-gui@npm:^0.1.0":
   version: 0.1.0
-  resolution: "climb-dashboard-gui@file:../../react-climb-dashboard-gui#../../react-climb-dashboard-gui::hash=370b01&locator=climb_usage_extension%40workspace%3A."
+  resolution: "climb-dashboard-gui@npm:0.1.0"
   dependencies:
     bootstrap: ^5.3.8
     react-bootstrap: ^2.10.10
   peerDependencies:
+    climb-jupyter-base-component: ^0.2.1
     react: ^17.0.2
     react-dom: ^17.0.2
-  checksum: 49f39deb0fc98579189b43d7b5fab2dd88a9e066d46decbc044827a5178813a831bcabd58f09344bbfe78b053840865be067e4739166f41ffb6dd59c587a9ddc
+  checksum: 2afc124214410836161e6f0a25660b8efe6cc4b4ffc5c5f070eb2d8851647137db792edd890a54e0c92ef8d76da059e71abcb3f87dc626d6588b1bcb9160b98c
   languageName: node
   linkType: hard
 
-"climb-onyx-gui@npm:^0.16.3":
-  version: 0.16.3
-  resolution: "climb-onyx-gui@npm:0.16.3"
+"climb-jupyter-base-component@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "climb-jupyter-base-component@npm:0.2.2"
+  dependencies:
+    bootstrap: ^5.3.7
+  peerDependencies:
+    react: ^17.0.1 || ^18.2.0
+    react-dom: ^17.0.1 || ^18.2.0
+  checksum: f574f66856e9bcb5e5a8f9a0d6aa40a3035e344499a464c0a5908b4a56c2df571fa43923af1c309d5588ef38fa6011e49f26d4fffb1535fdd654f6e96077c165
+  languageName: node
+  linkType: hard
+
+"climb-onyx-gui@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "climb-onyx-gui@npm:0.17.0"
   dependencies:
     "@ag-grid-community/client-side-row-model": ^32.2.0
     "@ag-grid-community/core": ^32.2.0
     "@ag-grid-community/csv-export": ^32.2.0
     "@ag-grid-community/react": ^32.2.0
     "@ag-grid-community/styles": ^32.2.0
-    "@fontsource/ibm-plex-sans": ^5.1.1
     "@tanstack/react-query": ^4.36.1
-    bootstrap: ^5.3.7
     export-to-csv: ^1.3.0
     http-status-codes: ^2.3.0
     json-edit-react: ^1.22.6
@@ -2080,9 +2084,10 @@ __metadata:
     react-plotly.js: ^2.6.0
     react-select: ^5.8.0
   peerDependencies:
-    react: ^17.0.2
-    react-dom: ^17.0.2
-  checksum: a79ee24a55dee23d4bd21f0f0fed09b88042456ab8ebbf4bcfedc1f004f1e8ed132ee495dfd227c4c5c95d158c291383ca5f4ddd30678aad4dab65ee43dd4f90
+    climb-jupyter-base-component: ^0.2.1
+    react: ^17.0.1 || ^18.2.0
+    react-dom: ^17.0.1 || ^18.2.0
+  checksum: 3b3e83f725be212c92af24142c0dccd3d88cd5f75e7da21024d86c893fa0a9b39c403b81b4b301a64ae5962710550e5bcf6d26989305b7ffd436a7c9cf88ba8a
   languageName: node
   linkType: hard
 
@@ -2103,8 +2108,9 @@ __metadata:
     "@types/react-addons-linked-state-mixin": ^0.14.22
     "@typescript-eslint/eslint-plugin": ^6.1.0
     "@typescript-eslint/parser": ^6.1.0
-    climb-dashboard-gui: ../../react-climb-dashboard-gui
-    climb-onyx-gui: ^0.16.3
+    climb-dashboard-gui: ^0.1.0
+    climb-jupyter-base-component: ^0.2.2
+    climb-onyx-gui: ^0.17.0
     css-loader: ^6.7.1
     eslint: ^8.36.0
     eslint-config-prettier: ^8.8.0

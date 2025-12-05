@@ -62,8 +62,9 @@
         "@jupyterlab/services": "^7.0.0",
         "@jupyterlab/ui-components": "^4.4.9",
         "@lumino/widgets": "^2.7.1",
-        "climb-dashboard-gui": "../../react-climb-dashboard-gui",
-        "climb-onyx-gui": "^0.16.3"
+        "climb-dashboard-gui": "^0.1.0",
+        "climb-jupyter-base-component": "^0.2.2",
+        "climb-onyx-gui": "^0.17.0"
     },
     "devDependencies": {
         "@jupyterlab/builder": "^4.0.0",

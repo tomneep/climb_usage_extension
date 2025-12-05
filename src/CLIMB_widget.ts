@@ -8,7 +8,7 @@ export class CLIMBWidget extends Widget {
   constructor() {
     super();
 
-    this.node.classList.add('onyx', 'climb-stats');
+    this.node.classList.add('climb-jupyter', 'climb-stats');
 
     // This should probably be called createHeader instead
     this.node.appendChild(this.createNavbar());
