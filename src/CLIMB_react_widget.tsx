@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import App from 'climb-dashboard-gui';
 
-import { ReactWidget } from '@jupyterlab/ui-components';
+import { ReactWidget } from '@jupyterlab/apputils';
 import { requestAPI } from './handler';
 
 export class CLIMBReactWidget extends ReactWidget {
