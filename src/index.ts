@@ -31,8 +31,8 @@ function activate(
   const newReactWidget = () => {
     const content = new CLIMBReactWidget();
     const main_widget = new MainAreaWidget({ content });
-    main_widget.id = 'climb_react_widget'
-    main_widget.title.label = 'CLIMB React Widget';
+    main_widget.id = 'climb_dashboard'
+    main_widget.title.label = 'CLIMB Dashboard';
     main_widget.title.icon = cloudIcon;
     main_widget.title.closable = true;
 
@@ -41,10 +41,10 @@ function activate(
 
   let climb_react_widget: MainAreaWidget<CLIMBReactWidget> = newReactWidget();
 
-  const react_command: string = 'climb:react:open';
+  const react_command: string = 'climb:open';
   app.commands.addCommand(react_command, {
-    label: 'CLIMB React dashboard',
-    caption: 'CLIMB React dashboard',
+    label: 'CLIMB Dashboard',
+    caption: 'CLIMB Dashboard',
     icon: cloudIcon,
     execute: () => {
       if (climb_react_widget.isDisposed) {
