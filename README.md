@@ -1,13 +1,11 @@
-# climb_usage_extension
+# CLIMB Dashboard JupyterLab extension
 
 [![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh//main?urlpath=lab)
 
 A JupyterLab extension to query CLIMB resource usage
 
-This extension is composed of a Python package named `climb_usage_extension`
-for the server extension and a NPM package named `climb_usage_extension`
-for the frontend extension.
+This extension is composed of a Python package named `climb_dashboard_gui`.
 
 ## Requirements
 
@@ -18,7 +16,7 @@ for the frontend extension.
 To install the extension, execute:
 
 ```bash
-pip install climb_usage_extension
+pip install climb_dashboard_gui
 ```
 
 ## Uninstall
@@ -26,7 +24,7 @@ pip install climb_usage_extension
 To remove the extension, execute:
 
 ```bash
-pip uninstall climb_usage_extension
+pip uninstall climb_dashboard_gui
 ```
 
 ## Troubleshoot
@@ -57,13 +55,13 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the climb_usage_extension directory
+# Change directory to the climb_dashboard_gui directory
 # Install package in development mode
 pip install -e "."
 # Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
 # Server extension must be manually installed in develop mode
-jupyter server extension enable climb_usage_extension
+jupyter server extension enable climb_dashboard_gui
 # Rebuild extension Typescript source after making changes
 jlpm build
 ```
@@ -89,13 +87,13 @@ jupyter lab build --minimize=False
 
 ```bash
 # Server extension must be manually disabled in develop mode
-jupyter server extension disable climb_usage_extension
-pip uninstall climb_usage_extension
+jupyter server extension disable climb_dashboard_gui
+pip uninstall climb_dashboard_gui
 ```
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
 command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
-folder is located. Then you can remove the symlink named `climb_usage_extension` within that folder.
+folder is located. Then you can remove the symlink named `climb_dashboard_gui` within that folder.
 
 ### Packaging the extension
 

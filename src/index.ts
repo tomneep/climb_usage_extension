@@ -66,10 +66,10 @@ function activate(
 }
 
 /**
- * Initialization data for the climb_usage_extension extension.
+ * Initialization data for the climb dashboard extension.
  */
 const plugin: JupyterFrontEndPlugin<void> = {
-  id: 'climb_usage_extension:plugin',
+  id: 'climb_dashboard_gui_extension:plugin',
   description: 'A JupyterLab extension to query CLIMB resource usage',
   autoStart: true,
   requires: [ICommandPalette],

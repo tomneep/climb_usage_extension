@@ -1,4 +1,4 @@
-# Making a new release of climb_usage_extension
+# Making a new release of climb_dashboard_gui
 
 The extension can be published to `PyPI` and `npm` manually or using the [Jupyter Releaser](https://github.com/jupyter-server/jupyter_releaser).
 

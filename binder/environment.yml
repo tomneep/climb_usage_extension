@@ -1,4 +1,4 @@
-# a mybinder.org-ready environment for demoing climb_usage_extension
+# a mybinder.org-ready environment for demoing climb_dashboard_gui
 # this environment may also be used locally on Linux/MacOS/Windows, e.g.
 #
 #   conda env update --file binder/environment.yml
