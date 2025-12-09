@@ -10,8 +10,6 @@ import { ICommandPalette, MainAreaWidget } from '@jupyterlab/apputils';
 
 import cloudIconSvg from '../style/icons/cloud.svg';
 
-import { CLIMBWidget } from './CLIMB_widget';
-
 import '../style/index.css';
 
 export const cloudIcon = new LabIcon({
@@ -29,39 +27,6 @@ function activate(
   launcher: ILauncher | null
 ) {
   console.log('JupyterLab extension jupyterlab_climb is activated!');
-
-  // Define a widget creator function
-  const newWidget = () => {
-    const content = new CLIMBWidget();
-    const widget = new MainAreaWidget({ content });
-    widget.id = 'climb-jupyterlab';
-    widget.title.label = 'CLIMB stats';
-    widget.title.closable = true;
-    return widget;
-  };
-
-  // Create a single widget
-  let widget = newWidget();
-
-  // Add an application command
-  const command: string = 'climb:open';
-  app.commands.addCommand(command, {
-    label: 'CLIMB dashboard',
-    caption: 'CLIMB dashboard',
-    icon: cloudIcon,
-    execute: () => {
-      // Regenerate the widget if disposed
-      if (widget.isDisposed) {
-        widget = newWidget();
-      }
-      if (!widget.isAttached) {
-        // Attach the widget to the main work area if it's not there
-        app.shell.add(widget, 'main');
-      }
-      // Activate the widget
-      app.shell.activateById(widget.id);
-    }
-  });
 
   const newReactWidget = () => {
     const content = new CLIMBReactWidget();
@@ -93,11 +58,9 @@ function activate(
   })
 
   // Add the command to the palette.
-  palette.addItem({ command, category: 'CLIMB' });
   palette.addItem({ command: react_command, category: 'CLIMB' });
 
   if (launcher) {
-    launcher.add({ command, category: 'CLIMB' });
     launcher.add({ command: react_command, category: 'CLIMB' });
   }
 }
