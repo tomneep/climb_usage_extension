@@ -17,7 +17,7 @@ export const cloudIcon = new LabIcon({
   svgstr: cloudIconSvg
 });
 
-import { CLIMBReactWidget } from "./CLIMB_react_widget";
+import { CLIMBReactWidget } from './CLIMB_react_widget';
 /**
  * Activate the CLIMB widget extension.
  */
@@ -31,7 +31,7 @@ function activate(
   const newReactWidget = () => {
     const content = new CLIMBReactWidget();
     const main_widget = new MainAreaWidget({ content });
-    main_widget.id = 'climb_dashboard'
+    main_widget.id = 'climb_dashboard';
     main_widget.title.label = 'CLIMB Dashboard';
     main_widget.title.icon = cloudIcon;
     main_widget.title.closable = true;
@@ -55,7 +55,7 @@ function activate(
       }
       app.shell.activateById(climb_react_widget.id);
     }
-  })
+  });
 
   // Add the command to the palette.
   palette.addItem({ command: react_command, category: 'CLIMB' });
