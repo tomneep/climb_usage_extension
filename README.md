@@ -1,6 +1,6 @@
 # CLIMB Dashboard JupyterLab extension
 
-[![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
+[![Github Actions Status](https://github.com/tomneep/climb_usage_extension/workflows/Build/badge.svg)](https://github.com/tomneep/climb_usage_extension/actions/workflows/build.yml)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh//main?urlpath=lab)
 
 A JupyterLab extension to query CLIMB resource usage
