@@ -26,5 +26,5 @@ jobs:
       - name: Upload Distributions
         uses: actions/upload-artifact@v4
         with:
-          name: climb_usage_extension-releaser-dist-${{ github.run_number }}
+          name: climb_dashboard_gui-releaser-dist-${{ github.run_number }}
           path: .jupyter_releaser_checkout/dist

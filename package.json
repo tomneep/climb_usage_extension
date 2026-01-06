@@ -1,5 +1,5 @@
 {
-    "name": "climb_usage_extension",
+    "name": "climb_dashboard_gui",
     "version": "0.1.0",
     "description": "A JupyterLab extension to query CLIMB resource usage",
     "keywords": [
@@ -26,7 +26,7 @@
     "style": "style/index.css",
     "repository": {
         "type": "git",
-        "url": ".git"
+        "url": "git+https://github.com/tomneep/climb_usage_extension.git"
     },
     "scripts": {
         "build": "jlpm build:lib && jlpm build:labextension:dev",
@@ -38,7 +38,7 @@
         "clean": "jlpm clean:lib",
         "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
         "clean:lintcache": "rimraf .eslintcache .stylelintcache",
-        "clean:labextension": "rimraf climb_usage_extension/labextension climb_usage_extension/_version.py",
+        "clean:labextension": "rimraf climb_dashboard_gui/labextension climb_dashboard_gui/_version.py",
         "clean:all": "jlpm clean:lib && jlpm clean:labextension && jlpm clean:lintcache",
         "eslint": "jlpm eslint:check --fix",
         "eslint:check": "eslint . --cache --ext .ts,.tsx",
@@ -62,7 +62,8 @@
         "@jupyterlab/services": "^7.0.0",
         "@jupyterlab/ui-components": "^4.4.9",
         "@lumino/widgets": "^2.7.1",
-        "climb-onyx-gui": "^0.16.3"
+        "climb-dashboard-gui": "^0.1.1",
+        "climb-jupyter-base-component": "^0.2.2"
     },
     "devDependencies": {
         "@jupyterlab/builder": "^4.0.0",
@@ -104,12 +105,12 @@
                     "pip"
                 ],
                 "base": {
-                    "name": "climb_usage_extension"
+                    "name": "climb_dashboard_gui"
                 }
             }
         },
         "extension": true,
-        "outputDir": "climb_usage_extension/labextension"
+        "outputDir": "climb_dashboard_gui/labextension"
     },
     "eslintIgnore": [
         "node_modules",

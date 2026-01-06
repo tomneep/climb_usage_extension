@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install -y nodejs npm && \
 USER $NB_USER
 
 # Copy your local extension into the container
-# COPY . /home/jovyan/my-extension
 COPY --chown=${NB_UID}:${NB_GID} . /home/jovyan/my-extension
 
 # (Optional) install additional Python dependencies
