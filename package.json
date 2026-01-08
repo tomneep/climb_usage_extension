@@ -1,5 +1,5 @@
 {
-    "name": "climb_dashboard_gui",
+    "name": "climb-dashboard-gui",
     "version": "0.1.0",
     "description": "A JupyterLab extension to query CLIMB resource usage",
     "keywords": [
@@ -9,7 +9,7 @@
     ],
     "homepage": "https://github.com/MRC-CLIMB/jupyterhub-extension",
     "bugs": {
-        "url": "/issues"
+        "url": "https://github.com/MRC-CLIMB/jupyterhub-extension/issues"
     },
     "license": "BSD-3-Clause",
     "author": {
