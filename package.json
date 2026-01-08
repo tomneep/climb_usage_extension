@@ -7,7 +7,7 @@
         "jupyterlab",
         "jupyterlab-extension"
     ],
-    "homepage": "",
+    "homepage": "https://github.com/MRC-CLIMB/jupyterhub-extension",
     "bugs": {
         "url": "/issues"
     },
