@@ -1,6 +1,6 @@
 {
     "name": "climb-dashboard-gui",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A JupyterLab extension to query CLIMB resource usage",
     "keywords": [
         "jupyter",
@@ -62,7 +62,7 @@
         "@jupyterlab/services": "^7.0.0",
         "@jupyterlab/ui-components": "^4.4.9",
         "@lumino/widgets": "^2.7.1",
-        "climb-dashboard-gui": "^0.1.1",
+        "climb-dashboard-gui": "~0.1.1",
         "climb-jupyter-base-component": "^0.2.2"
     },
     "devDependencies": {
