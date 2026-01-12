@@ -1728,7 +1728,7 @@ __metadata:
     "@types/react-addons-linked-state-mixin": ^0.14.22
     "@typescript-eslint/eslint-plugin": ^6.1.0
     "@typescript-eslint/parser": ^6.1.0
-    climb-dashboard-gui: ^0.2.0
+    climb-dashboard-gui: ~0.2.0
     climb-jupyter-base-component: ^0.2.2
     css-loader: ^6.7.1
     eslint: ^8.36.0
@@ -1750,9 +1750,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"climb-dashboard-gui@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "climb-dashboard-gui@npm:0.2.0"
+"climb-dashboard-gui@npm:~0.2.0":
+  version: 0.2.2
+  resolution: "climb-dashboard-gui@npm:0.2.2"
   dependencies:
     bootstrap: ^5.3.8
     react-bootstrap: ^2.10.10
@@ -1760,7 +1760,7 @@ __metadata:
     climb-jupyter-base-component: ^0.2.1
     react: ^17.0.2
     react-dom: ^17.0.2
-  checksum: 64dc72d973bf84af9309f0ad04551824dfd1728eb21d384e7cd131bff53023e68678cd797c98652ddbea5cef92fdd393bf4d8b585156bdd781e1eb7e33eefdc4
+  checksum: 2c70602a98371056f5f9861eba48ce645df404917052e1bc6e3444d96c483ec497c608246a2d8858f05f4512109abf541a125e73d0b28ea8c0afda070075d484
   languageName: node
   linkType: hard
 
