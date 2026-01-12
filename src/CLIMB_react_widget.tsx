@@ -25,11 +25,16 @@ export class CLIMBReactWidget extends ReactWidget {
       return requestAPI<any>('disk-usage');
     };
 
+    const gpuHandler = async () => {
+      return requestAPI<any>('gpu-info');
+    };
+
     return (
       <App
         userInfoHandler={userInfoHandler}
         resourcesHandler={resourcesHandler}
         volumesHandler={volumesHandler}
+        gpuHandler={gpuHandler}
       />
     );
   }

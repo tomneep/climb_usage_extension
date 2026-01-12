@@ -42,8 +42,8 @@ artifacts = ["climb_dashboard_gui/labextension"]
 exclude = [".github", "binder"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"climb_dashboard_gui/labextension" = "share/jupyter/labextensions/climb_dashboard_gui"
-"install.json" = "share/jupyter/labextensions/climb_dashboard_gui/install.json"
+"climb_dashboard_gui/labextension" = "share/jupyter/labextensions/climb-dashboard-gui-extension"
+"install.json" = "share/jupyter/labextensions/climb-dashboard-gui-extension/install.json"
 "jupyter-config/server-config" = "etc/jupyter/jupyter_server_config.d"
 
 [tool.hatch.build.hooks.version]

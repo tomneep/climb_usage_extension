@@ -154,24 +154,22 @@ class DiskUsageHandler(APIHandler):
         return self.finish(json.dumps(output))
 
 
-@add_to_handlers("has-gpu")
-class HasGPUHandler(APIHandler):
-    @tornado.web.authenticated
-    def get(self):
-        has_gpu = "NVIDIA_VISIBLE_DEVICES" in os.environ
-        return self.finish(json.dumps({"has_gpu": has_gpu}))
-
-
 @add_to_handlers("gpu-info")
 class GPUInfoHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
+
+        has_gpu = "NVIDIA_VISIBLE_DEVICES" in os.environ
+
+        if not has_gpu:
+            return self.finish({"available": False, "name": "not-present"})
+
         import pynvml
 
         pynvml.nvmlInit()
         handle = pynvml.nvmlDeviceGetHandleByIndex(0)
         name = pynvml.nvmlDeviceGetName(handle)
-        return self.finish(json.dumps({"name": name}))
+        return self.finish(json.dumps({"available": True, "name": name}))
 
 
 def setup_handlers(web_app):
